@@ -7,8 +7,8 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
-export type { ContentBlockDTO } from './models/ContentBlockDTO';
 export type { IngredientDTO } from './models/IngredientDTO';
+export type { JsonNode } from './models/JsonNode';
 export type { RecipeDTO } from './models/RecipeDTO';
 export type { Tag } from './models/Tag';
 export type { UserProfile } from './models/UserProfile';

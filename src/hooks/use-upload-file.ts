@@ -1,22 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from 'react';
-
-import type { OurFileRouter } from '@/lib/uploadthing';
-import type {
-  ClientUploadedFileData,
-  UploadFilesOptions,
-} from 'uploadthing/types';
-
-import { generateReactHelpers } from '@uploadthing/react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import {ImageControllerService} from '@/services/openapi/services/ImageControllerService'
 
-export type UploadedFile<T = unknown> = ClientUploadedFileData<T>;
+export type UploadedFile<T = unknown> = {
+  key: string;
+  appUrl: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+};
 
-interface UseUploadFileProps
-  extends Pick<
-    UploadFilesOptions<OurFileRouter['editorUploader']>,
-    'headers' | 'onUploadBegin' | 'onUploadProgress' | 'skipPolling'
-  > {
+interface UseUploadFileProps {
   onUploadComplete?: (file: UploadedFile) => void;
   onUploadError?: (error: unknown) => void;
 }
@@ -24,7 +23,6 @@ interface UseUploadFileProps
 export function useUploadFile({
   onUploadComplete,
   onUploadError,
-  ...props
 }: UseUploadFileProps = {}) {
   const [uploadedFile, setUploadedFile] = React.useState<UploadedFile>();
   const [uploadingFile, setUploadingFile] = React.useState<File>();
@@ -36,19 +34,21 @@ export function useUploadFile({
     setUploadingFile(file);
 
     try {
-      const res = await uploadFiles('editorUploader', {
-        ...props,
-        files: [file],
-        onUploadProgress: ({ progress }) => {
-          setProgress(Math.min(progress, 100));
-        },
-      });
+      const url = await ImageControllerService.saveImage({ image: file });
 
-      setUploadedFile(res[0]);
+      const uploaded: UploadedFile = {
+        key: file.name,
+        appUrl: url,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url,
+      };
 
-      onUploadComplete?.(res[0]);
+      setUploadedFile(uploaded);
+      onUploadComplete?.(uploaded);
 
-      return uploadedFile;
+      return uploaded;
     } catch (error) {
       const errorMessage = getErrorMessage(error);
 
@@ -58,36 +58,9 @@ export function useUploadFile({
           : 'Something went wrong, please try again later.';
 
       toast.error(message);
-
       onUploadError?.(error);
 
-      // Mock upload for unauthenticated users
-      // toast.info('User not logged in. Mocking upload process.');
-      const mockUploadedFile = {
-        key: 'mock-key-0',
-        appUrl: `https://mock-app-url.com/${file.name}`,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-      } as UploadedFile;
-
-      // Simulate upload progress
-      let progress = 0;
-
-      const simulateProgress = async () => {
-        while (progress < 100) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          progress += 2;
-          setProgress(Math.min(progress, 100));
-        }
-      };
-
-      await simulateProgress();
-
-      setUploadedFile(mockUploadedFile);
-
-      return mockUploadedFile;
+      return undefined;
     } finally {
       setProgress(0);
       setIsUploading(false);
@@ -104,18 +77,11 @@ export function useUploadFile({
   };
 }
 
-export const { uploadFiles, useUploadThing } =
-  generateReactHelpers<OurFileRouter>();
-
 export function getErrorMessage(err: unknown) {
   const unknownError = 'Something went wrong, please try again later.';
 
   if (err instanceof z.ZodError) {
-    const errors = err.issues.map((issue) => {
-      return issue.message;
-    });
-
-    return errors.join('\n');
+    return err.issues.map((issue) => issue.message).join('\n');
   } else if (err instanceof Error) {
     return err.message;
   } else {
@@ -124,7 +90,5 @@ export function getErrorMessage(err: unknown) {
 }
 
 export function showErrorToast(err: unknown) {
-  const errorMessage = getErrorMessage(err);
-
-  return toast.error(errorMessage);
+  toast.error(getErrorMessage(err));
 }

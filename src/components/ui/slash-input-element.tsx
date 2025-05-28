@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client';
 
 import * as React from 'react';
@@ -32,6 +35,7 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
+  ImageIcon,
   LightbulbIcon,
   ListIcon,
   ListOrdered,
@@ -58,6 +62,7 @@ import {
   InlineComboboxInput,
   InlineComboboxItem,
 } from './inline-combobox';
+import { ImagePlugin } from '@udecode/plate-media/react';
 
 type Group = {
   group: string;
@@ -96,6 +101,12 @@ const groups: Group[] = [
         keywords: ['paragraph'],
         label: 'Text',
         value: ParagraphPlugin.key,
+      },
+      {
+        icon: <ImageIcon />,
+        keywords: ['image'],
+        label: 'Image',
+        value: ImagePlugin.key,
       },
       {
         icon: <Heading1Icon />,

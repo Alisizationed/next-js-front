@@ -1,8 +1,9 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
+/* tslint:disable */
 /* eslint-disable */
-import type { ContentBlockDTO } from './ContentBlockDTO';
 import type { IngredientDTO } from './IngredientDTO';
+import type { JsonNode } from './JsonNode';
 import type { Tag } from './Tag';
 export type RecipeDTO = {
     id?: number;
@@ -10,7 +11,7 @@ export type RecipeDTO = {
     image?: string;
     title?: string;
     description?: string;
-    contentBlocks?: Array<ContentBlockDTO>;
+    content?: JsonNode;
     tags?: Array<Tag>;
     ingredients?: Array<IngredientDTO>;
 };

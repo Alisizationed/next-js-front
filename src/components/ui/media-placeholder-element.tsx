@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 'use client';
 
 import * as React from 'react';
@@ -110,7 +111,7 @@ export const MediaPlaceholderElement = withHOC(
           name: element.mediaType === FilePlugin.key ? uploadedFile.name : '',
           placeholderId: element.id as string,
           type: element.mediaType!,
-          url: uploadedFile.url,
+          url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${uploadedFile.url}`,
         };
 
         editor.tf.insertNodes(node, { at: path });

@@ -2,7 +2,4 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ContentBlockDTO = {
-    type: string;
-};
-
+export type JsonNode = Record<string, any>;

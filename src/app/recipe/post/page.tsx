@@ -1,4 +1,4 @@
-// 'use client';
+'use client';
 
 // import * as React from 'react';
 // import type { Value } from '@udecode/plate';
@@ -61,7 +61,12 @@ import { Toaster } from 'sonner';
 import { PlateEditor } from '@/components/editor/plate-editor';
 import { SettingsProvider } from '@/components/editor/settings';
 
+import { useSession } from 'next-auth/react';
+
 export default function Page() {
+
+      const session  = useSession();
+  console.log(session);
   return (
     <div className="h-screen w-full">
       <SettingsProvider>

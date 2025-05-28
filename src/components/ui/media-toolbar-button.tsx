@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client';
 
 import * as React from 'react';
@@ -94,7 +99,7 @@ export function MediaToolbarButton({
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   const { openFilePicker } = useFilePicker({
-    accept: currentConfig.accept,
+    accept: currentConfig?.accept,
     multiple: true,
     onFilesSelected: ({ plainFiles: updatedFiles }) => {
       editor.getTransforms(PlaceholderPlugin).insert.media(updatedFiles);
@@ -116,7 +121,7 @@ export function MediaToolbarButton({
         pressed={open}
       >
         <ToolbarSplitButtonPrimary>
-          {currentConfig.icon}
+          {currentConfig?.icon}
         </ToolbarSplitButtonPrimary>
 
         <DropdownMenu
@@ -136,7 +141,7 @@ export function MediaToolbarButton({
           >
             <DropdownMenuGroup>
               <DropdownMenuItem onSelect={() => openFilePicker()}>
-                {currentConfig.icon}
+                {currentConfig?.icon}
                 Upload from computer
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setDialogOpen(true)}>

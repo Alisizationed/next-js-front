@@ -12,6 +12,7 @@ export const env = createEnv({
         ? z.string()
         : z.string().optional(),
     AUTH_KEYCLOAK_ID: z.string(),
+    AUTH_KEYCLOAK_SECRET: z.string(),
     AUTH_KEYCLOAK_ISSUER: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -34,6 +35,7 @@ export const env = createEnv({
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
     AUTH_KEYCLOAK_ID: process.env.AUTH_KEYCLOAK_ID,
+    AUTH_KEYCLOAK_SECRET: process.env.AUTH_KEYCLOAK_SECRET,
     AUTH_KEYCLOAK_ISSUER: process.env.AUTH_KEYCLOAK_ISSUER,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,

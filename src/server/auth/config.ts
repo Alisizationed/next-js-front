@@ -9,6 +9,7 @@ declare module "next-auth" {
     user: {
       id: string;
     } & DefaultSession["user"];
+    accessToken?: string;
   }
 }
 
@@ -23,13 +24,35 @@ export const authConfig = {
       issuer: process.env.AUTH_KEYCLOAK_ISSUER!,
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
-    session: ({ session, token }) => ({
+    async jwt({ token, account }) {
+      if (account?.access_token) {
+        token.accessToken = account.access_token;
+      }
+      return token;
+    },
+
+      session: ({ session, token }) => {
+    if (!token.sub) {
+      console.warn('No user ID found in token');
+    }
+    console.log(session)
+    console.log(token)
+
+  // 
+  
+    return {
       ...session,
       user: {
         ...session.user,
-        id: token.sub!,
+        id: token.sub ?? token.id ?? '',
       },
-    }),
+      accessToken: token.accessToken as string | undefined,
+    };
+  },
   },
 } satisfies NextAuthConfig;
