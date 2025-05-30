@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";

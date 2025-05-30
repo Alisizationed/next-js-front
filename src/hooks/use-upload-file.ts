@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import * as React from 'react';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import {ImageControllerService} from '@/services/openapi/services/ImageControllerService'
+import * as React from "react";
+import { toast } from "sonner";
+import { z } from "zod";
+import { ImageControllerService } from "@/services/openapi/services/ImageControllerService";
+import { fetchSaveImage, useSaveImage } from "@/api/apiComponents";
 
 export type UploadedFile<T = unknown> = {
   key: string;
@@ -28,13 +30,29 @@ export function useUploadFile({
   const [uploadingFile, setUploadingFile] = React.useState<File>();
   const [progress, setProgress] = React.useState<number>(0);
   const [isUploading, setIsUploading] = React.useState(false);
+  // const [url, setUrl] = React.useState<string>("url");
+
+  const mutation = useSaveImage({
+    // onSuccess: (data) => {
+    //   console.log('Success '+data);
+    //   setUrl(data);
+    //   return data;
+    // }
+  });
+  
 
   async function uploadThing(file: File) {
     setIsUploading(true);
     setUploadingFile(file);
 
     try {
-      const url = await ImageControllerService.saveImage({ image: file });
+      // const url = await ImageControllerService.saveImage({ image: file });
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const url = await mutation.mutateAsync({
+        body: formData as any,
+      });
 
       const uploaded: UploadedFile = {
         key: file.name,
@@ -55,7 +73,7 @@ export function useUploadFile({
       const message =
         errorMessage.length > 0
           ? errorMessage
-          : 'Something went wrong, please try again later.';
+          : "Something went wrong, please try again later.";
 
       toast.error(message);
       onUploadError?.(error);
@@ -78,10 +96,10 @@ export function useUploadFile({
 }
 
 export function getErrorMessage(err: unknown) {
-  const unknownError = 'Something went wrong, please try again later.';
+  const unknownError = "Something went wrong, please try again later.";
 
   if (err instanceof z.ZodError) {
-    return err.issues.map((issue) => issue.message).join('\n');
+    return err.issues.map((issue) => issue.message).join("\n");
   } else if (err instanceof Error) {
     return err.message;
   } else {

@@ -39,19 +39,14 @@ export const authConfig = {
       session: ({ session, token }) => {
     if (!token.sub) {
       console.warn('No user ID found in token');
-    }
-    console.log(session)
-    console.log(token)
-
-  // 
-  
+    }  
     return {
       ...session,
       user: {
         ...session.user,
         id: token.sub ?? token.id ?? '',
       },
-      accessToken: token.accessToken as string | undefined,
+      accessToken: token.accessToken,
     };
   },
   },
