@@ -27,27 +27,31 @@ export const authConfig = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 60 * 5,
   },
   callbacks: {
     async jwt({ token, account }) {
-      if (account?.access_token) {
+      if (account) {
         token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.idToken = account.id_token;
       }
+
       return token;
     },
 
-      session: ({ session, token }) => {
-    if (!token.sub) {
-      console.warn('No user ID found in token');
-    }  
-    return {
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub ?? token.id ?? '',
-      },
-      accessToken: token.accessToken,
-    };
-  },
+    session: ({ session, token }) => {
+      if (!token.sub) {
+        console.warn("No user ID found in token");
+      }
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub ?? token.id ?? "",
+        },
+        accessToken: token.accessToken,
+      };
+    },
   },
 } satisfies NextAuthConfig;

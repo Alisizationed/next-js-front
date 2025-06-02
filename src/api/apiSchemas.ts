@@ -26,8 +26,6 @@ export type IngredientDTO = {
   measure?: string;
 };
 
-export type JsonNode = Record<string, any>;
-
 export type RecipeDTO = {
   /**
    * @format int64
@@ -40,7 +38,7 @@ export type RecipeDTO = {
   image?: string;
   title?: string;
   description?: string;
-  content?: JsonNode;
+  contents?: string;
   tags?: Tag[];
   ingredients?: IngredientDTO[];
 };

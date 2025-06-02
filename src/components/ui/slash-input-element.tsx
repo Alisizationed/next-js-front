@@ -47,6 +47,8 @@ import {
   Square,
   Table,
   TableOfContentsIcon,
+  Music,
+  Film,
 } from "lucide-react";
 
 import {
@@ -63,9 +65,16 @@ import {
   InlineComboboxInput,
   InlineComboboxItem,
 } from "./inline-combobox";
-import { ImagePlugin, PlaceholderPlugin } from "@udecode/plate-media/react";
+
+import {
+  ImagePlugin,
+  AudioPlugin,
+  VideoPlugin,
+} from "@udecode/plate-media/react";
+
 import { useFilePicker } from "use-file-picker";
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -76,35 +85,99 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
 import { Input } from "@/components/ui/input";
 import { isUrl } from "@udecode/plate";
 
 export function SlashInputElement(
-  props: PlateElementProps<TSlashInputElement>,
+  props: PlateElementProps<TSlashInputElement>
 ) {
   const { editor, element } = props;
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [imageUrl, setImageUrl] = React.useState("");
   const editorRef = useEditorRef();
 
-  const { openFilePicker } = useFilePicker({
+  // State for each dialog open and url input
+  const [imageDialogOpen, setImageDialogOpen] = React.useState(false);
+  const [imageUrl, setImageUrl] = React.useState("");
+
+  const [audioDialogOpen, setAudioDialogOpen] = React.useState(false);
+  const [audioUrl, setAudioUrl] = React.useState("");
+
+  const [videoDialogOpen, setVideoDialogOpen] = React.useState(false);
+  const [videoUrl, setVideoUrl] = React.useState("");
+
+  // File pickers for each media type
+  const { openFilePicker: openImagePicker } = useFilePicker({
     accept: ["image/*"],
     multiple: true,
     onFilesSelected: ({ plainFiles }) => {
-      editorRef.getTransforms(PlaceholderPlugin).insert.media(plainFiles);
+      editorRef.getTransforms(ImagePlugin).insert.media(plainFiles);
     },
   });
 
+  const { openFilePicker: openAudioPicker } = useFilePicker({
+    accept: ["audio/*"],
+    multiple: true,
+    onFilesSelected: ({ plainFiles }) => {
+      editorRef.getTransforms(AudioPlugin).insert.media(plainFiles);
+    },
+  });
+
+  const { openFilePicker: openVideoPicker } = useFilePicker({
+    accept: ["video/*"],
+    multiple: true,
+    onFilesSelected: ({ plainFiles }) => {
+      editorRef.getTransforms(VideoPlugin).insert.media(plainFiles);
+    },
+  });
+
+  // Handlers to insert URL nodes
   const handleInsertImageUrl = () => {
-    if (!isUrl(imageUrl)) return toast.error("Invalid URL");
+    if (!isUrl(imageUrl)) return toast.error("Invalid image URL");
     editorRef.tf.insertNodes({
       type: ImagePlugin.key,
       url: imageUrl,
       children: [{ text: "" }],
     });
     setImageUrl("");
-    setDialogOpen(false);
+    setImageDialogOpen(false);
   };
+
+  const handleInsertAudioUrl = () => {
+    if (!isUrl(audioUrl)) return toast.error("Invalid audio URL");
+    editorRef.tf.insertNodes({
+      type: AudioPlugin.key,
+      url: audioUrl,
+      children: [{ text: "" }],
+    });
+    setAudioUrl("");
+    setAudioDialogOpen(false);
+  };
+
+  const handleInsertVideoUrl = () => {
+    if (!isUrl(videoUrl)) return toast.error("Invalid video URL");
+    editorRef.tf.insertNodes({
+      type: VideoPlugin.key,
+      url: videoUrl,
+      children: [{ text: "" }],
+    });
+    setVideoUrl("");
+    setVideoDialogOpen(false);
+  };
+
+  type Group = {
+    group: string;
+    items: Item[];
+  };
+
+  interface Item {
+    icon: React.ReactNode;
+    value: string;
+    onSelect: (editor: PlateEditor, value: string) => void;
+    className?: string;
+    focusEditor?: boolean;
+    keywords?: string[];
+    label?: string;
+  }
 
   const groups: Group[] = [
     {
@@ -136,8 +209,30 @@ export function SlashInputElement(
           value: ImagePlugin.key,
           focusEditor: false,
           onSelect: () => {
-            openFilePicker();
-            setTimeout(() => setDialogOpen(true), 0);
+            openImagePicker();
+            setTimeout(() => setImageDialogOpen(true), 0);
+          },
+        },
+        {
+          icon: <Music />,
+          keywords: ["audio"],
+          label: "Audio",
+          value: AudioPlugin.key,
+          focusEditor: false,
+          onSelect: () => {
+            openAudioPicker();
+            setTimeout(() => setAudioDialogOpen(true), 0);
+          },
+        },
+        {
+          icon: <Film />,
+          keywords: ["video"],
+          label: "Video",
+          value: VideoPlugin.key,
+          focusEditor: false,
+          onSelect: () => {
+            openVideoPicker();
+            setTimeout(() => setVideoDialogOpen(true), 0);
           },
         },
         {
@@ -209,7 +304,10 @@ export function SlashInputElement(
       ].map((item) => ({
         ...item,
         onSelect:
-          item.onSelect ?? ((editor, value) => insertBlock(editor, value)),
+          item.onSelect ??
+          ((editor, value) => {
+            insertBlock(editor, value);
+          }),
       })),
     },
     {
@@ -283,14 +381,15 @@ export function SlashInputElement(
                     <div className="text-muted-foreground mr-2">{icon}</div>
                     {label ?? value}
                   </InlineComboboxItem>
-                ),
+                )
               )}
             </InlineComboboxGroup>
           ))}
         </InlineComboboxContent>
       </InlineCombobox>
 
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {/* Image URL dialog */}
+      <AlertDialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
         <AlertDialogContent className="gap-6">
           <AlertDialogHeader>
             <AlertDialogTitle>Insert Image via URL</AlertDialogTitle>
@@ -314,22 +413,57 @@ export function SlashInputElement(
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Audio URL dialog */}
+      <AlertDialog open={audioDialogOpen} onOpenChange={setAudioDialogOpen}>
+        <AlertDialogContent className="gap-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Insert Audio via URL</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            <Input
+              type="url"
+              placeholder="https://example.com/audio.mp3"
+              value={audioUrl}
+              onChange={(e) => setAudioUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleInsertAudioUrl()}
+              autoFocus
+            />
+          </AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleInsertAudioUrl}>
+              Insert
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Video URL dialog */}
+      <AlertDialog open={videoDialogOpen} onOpenChange={setVideoDialogOpen}>
+        <AlertDialogContent className="gap-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Insert Video via URL</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            <Input
+              type="url"
+              placeholder="https://example.com/video.mp4"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleInsertVideoUrl()}
+              autoFocus
+            />
+          </AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleInsertVideoUrl}>
+              Insert
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {props.children}
     </PlateElement>
   );
-}
-
-type Group = {
-  group: string;
-  items: Item[];
-};
-
-interface Item {
-  icon: React.ReactNode;
-  value: string;
-  onSelect: (editor: PlateEditor, value: string) => void;
-  className?: string;
-  focusEditor?: boolean;
-  keywords?: string[];
-  label?: string;
 }

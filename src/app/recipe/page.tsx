@@ -1,14 +1,10 @@
 'use client';
 
-import { useQuery } from "@tanstack/react-query";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
-import { RecipeControllerService, type RecipeDTO } from "@/services/openapi";
+import { useGetAllRecipes } from "@/api/apiComponents";
 
 const RecipeList = () => {
-  const { data, isLoading, isError } = useQuery<RecipeDTO[]>({
-    queryKey: ["getAll"],
-    queryFn: RecipeControllerService.getAllRecipes,
-  });
+  const { data, isLoading, isError } = useGetAllRecipes({});
 
   if (isLoading) return <>Loading</>;
 
@@ -18,7 +14,7 @@ const RecipeList = () => {
       <BentoGrid className="max-w-4xl mx-auto">
         {data?.map((item, i) => (
           <BentoGridItem
-            key={i}
+            key={`recipe-${item.id}`}
             title={item.title}
             description={item.description}
             image={item.image}

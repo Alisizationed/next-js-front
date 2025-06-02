@@ -47,7 +47,7 @@ export const BentoGridItem = ({
         )}
         key={`recipe-${link.split('/')[2]}`}
       >
-        <div className="relative w-full h-48 rounded-xl overflow-hidden">
+        <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
           <Image
             src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${image}`}
             alt="Recipe image"
@@ -58,12 +58,12 @@ export const BentoGridItem = ({
         </div>
         <div className="mt-4 flex flex-col justify-between transition duration-200 group-hover/bento:translate-x-2">
           {icon && <div>{icon}</div>}
-          <div className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200">
+          <div className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200 text-center">
             {title}
           </div>
-          <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
+          {/* <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
             {description}
-          </div>
+          </div> */}
         </div>
       </div>
     </Link>

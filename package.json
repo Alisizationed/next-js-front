@@ -17,7 +17,7 @@
     "download:openapi": "curl -k https://localhost:8453/v3/api-docs.yaml -o ./api-spec.yaml",
     "types:openapi:local": "npx openapi-typescript-codegen --input ./api-spec.yaml --output src/services/openapi --client axios",
     "types:refresh": "pnpm run download:openapi && pnpm run types:openapi:local",
-    "generate:api": "npx openapi-typescript-codegen --input ./api-spec.yaml --output ./src/api --client react-query --useOptions",
+    "generate:api": "npx openapi-codegen gen api",
     "generate:clean": "npx rm -rf ./src/api"
   },
   "dependencies": {
@@ -151,5 +151,5 @@
   "ct3aMetadata": {
     "initVersion": "7.39.3"
   },
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.11.0"
 }

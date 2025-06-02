@@ -32,13 +32,7 @@ export function useUploadFile({
   const [isUploading, setIsUploading] = React.useState(false);
   // const [url, setUrl] = React.useState<string>("url");
 
-  const mutation = useSaveImage({
-    // onSuccess: (data) => {
-    //   console.log('Success '+data);
-    //   setUrl(data);
-    //   return data;
-    // }
-  });
+  const mutation = useSaveImage({});
   
 
   async function uploadThing(file: File) {

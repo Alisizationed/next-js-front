@@ -1,7 +1,7 @@
 import {
-  generateReactQueryComponents,
-  generateSchemaTypes,
   generateFetchers,
+  generateSchemaTypes,
+  generateReactQueryComponents,
 } from "@openapi-codegen/typescript";
 import { defineConfig } from "@openapi-codegen/cli";
 export default defineConfig({
@@ -51,6 +51,23 @@ export default defineConfig({
         filenamePrefix,
       });
       await generateFetchers(context, {
+        filenamePrefix,
+        schemasFiles,
+      });
+    },
+  },
+  api: {
+    from: {
+      relativePath: "./api-spec.yaml",
+      source: "file",
+    },
+    outputDir: "api",
+    to: async (context) => {
+      const filenamePrefix = "api";
+      const { schemasFiles } = await generateSchemaTypes(context, {
+        filenamePrefix,
+      });
+      await generateReactQueryComponents(context, {
         filenamePrefix,
         schemasFiles,
       });

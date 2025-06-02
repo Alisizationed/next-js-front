@@ -11,7 +11,6 @@ import { deepMerge } from "./apiUtils";
 import type * as Fetcher from "./apiFetcher";
 import { apiFetch } from "./apiFetcher";
 import type * as Schemas from "./apiSchemas";
-import { useSession } from "next-auth/react";
 
 type QueryFnOptions = {
   signal?: AbortController["signal"];

@@ -14,7 +14,8 @@ import { TextField } from "@/components/ui/textfield";
 import SubscribeButton from "@/components/ui/subscribe-button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useSaveRecipe } from "@/api/apiComponents";
-import { useSession } from "next-auth/react";
+import { useCreateEditor } from "@/components/editor/use-create-editor";
+import { TextArea } from "@/components/ui/textarea";
 
 const { fieldContext, formContext } = createFormHookContexts();
 let file: string | Blob | null = null;
@@ -36,8 +37,7 @@ const getFile = (files: Blob | null) => {
 
 export default function Page() {
   const router = useRouter();
-  const session = useSession();
-
+  const editor = useCreateEditor();
   const mutation = useSaveRecipe();
 
   const form = useAppForm({
@@ -47,19 +47,24 @@ export default function Page() {
     },
     onSubmit: async ({ value: { title, description } }) => {
       const recipe = {
+        userProfileId: 2,
+        // userProfileId: session?.data?.user.id,
+        image: "",
         title: title,
         description: description,
-        // content: 
+        contents: JSON.stringify(editor?.children ?? []),
+        tags: [],
+        ingredients: [],
       };
 
       const formData = new FormData();
       formData.append("image", file!);
       formData.append("body", JSON.stringify(recipe));
+
       await mutation.mutateAsync({
-        headers: { Authorization: `Bearer: ${session.data?.accessToken}` },
         body: formData as any,
       });
-      router.push("/recipe/post");
+      router.push("/recipe");
     },
     validators: {
       onChange: ({ value }) => {
@@ -85,57 +90,60 @@ export default function Page() {
           e.preventDefault();
           await form.handleSubmit();
         }}
-        className="flex w-80 flex-col gap-3 justify-self-center"
+        // className="flex w-80 flex-col gap-3 justify-self-center"
       >
-        <form.Field
-          name="title"
-          validators={{
-            onChange: ({ value }) =>
-              !value
-                ? "A title is required"
-                : value.length < 3
-                  ? "Title must be at least 3 characters"
-                  : undefined,
-          }}
-        >
-          {/* {(field) => <TextField field={field} />} */}
-          {(field) => <TextField field={field} label="Title" />}
-        </form.Field>
-        <FileUpload onChange={getFile} />
+        <div className="flex w-80 flex-col gap-3 justify-self-center">
+          <form.Field
+            name="title"
+            validators={{
+              onChange: ({ value }) =>
+                !value
+                  ? "A title is required"
+                  : value.length < 3
+                    ? "Title must be at least 3 characters"
+                    : undefined,
+            }}
+          >
+            {/* {(field) => <TextField field={field} />} */}
+            {(field) => <TextField field={field} label="Title" />}
+          </form.Field>
+          <FileUpload onChange={getFile} />
 
-        <form.Field
-          name="description"
-          validators={{
-            onChange: ({ value }) =>
-              !value
-                ? "A description is required"
-                : value.length < 3
-                  ? "Description must be at least 3 characters"
-                  : undefined,
-          }}
-        >
-          {/* {(field) => <TextField label="description" />} */}
-          {(field) => <TextField field={field} label="Description" />}
-        </form.Field>
-
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-        >
-          {([canSubmit, isSubmitting]) => (
-            <SubscribeButton
-              label={isSubmitting ? "Submitting..." : "Submit"}
-              form={form}
-              // disabled={!canSubmit || isSubmitting}
-            />
-          )}
-        </form.Subscribe>
-      </form>
-        <div className="h-screen w-full">
+          <form.Field
+            name="description"
+            validators={{
+              onChange: ({ value }) =>
+                !value
+                  ? "A description is required"
+                  : value.length < 3
+                    ? "Description must be at least 3 characters"
+                    : undefined,
+            }}
+          >
+            {/* {(field) => <TextField label="description" />} */}
+            {(field) => <TextArea field={field} label="Description" />}
+          </form.Field>
+        </div>
+        <div className="h-screen w-full pt-4 pb-4">
           <SettingsProvider>
-            <PlateEditor />
+            <PlateEditor editor={editor} />
           </SettingsProvider>
           <Toaster />
         </div>
+        <div className="flex w-80 justify-self-center pb-6">
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+          >
+            {([canSubmit, isSubmitting]) => (
+              <SubscribeButton
+                label={isSubmitting ? "Posting..." : "Post"}
+                form={form}
+                // disabled={!canSubmit || isSubmitting}
+              />
+            )}
+          </form.Subscribe>
+        </div>
+      </form>
     </>
   );
 }
