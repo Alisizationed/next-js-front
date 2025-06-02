@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Image, { type ImageLoaderProps } from "next/image";
 
 export const BentoGrid = ({
   className,
@@ -15,7 +15,7 @@ export const BentoGrid = ({
     <div
       className={cn(
         "mx-auto grid max-w-7xl grid-cols-1 gap-4 md:auto-rows-[18rem] md:grid-cols-3",
-        className
+        className,
       )}
     >
       {children}
@@ -43,22 +43,25 @@ export const BentoGridItem = ({
       <div
         className={cn(
           "group/bento shadow-input flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-2 transition duration-200 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none",
-          className
+          className,
         )}
-        key={`recipe-${link.split('/')[2]}`}
+        key={`recipe-${link.split("/")[2]}`}
       >
-        <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
           <Image
             src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${image}`}
             alt="Recipe image"
-            fill
-            className="object-cover"
-            unoptimized
+            quality={50}
+            width={600}
+            height={450}
+            priority={false}
+            loading="lazy"
+            className="h-full w-full object-cover"
           />
         </div>
         <div className="mt-4 flex flex-col justify-between transition duration-200 group-hover/bento:translate-x-2">
           {icon && <div>{icon}</div>}
-          <div className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200 text-center">
+          <div className="mt-2 mb-2 text-center font-sans font-bold text-neutral-600 dark:text-neutral-200">
             {title}
           </div>
           {/* <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">

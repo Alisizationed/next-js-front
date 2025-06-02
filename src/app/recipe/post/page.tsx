@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -16,6 +18,10 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { useSaveRecipe } from "@/api/apiComponents";
 import { useCreateEditor } from "@/components/editor/use-create-editor";
 import { TextArea } from "@/components/ui/textarea";
+import { useState } from "react";
+import Tags from "@/components/ui/tag";
+import IngredientTable from "@/components/ui/ingredient-table";
+import type { IngredientDTO } from "@/api/apiSchemas";
 
 const { fieldContext, formContext } = createFormHookContexts();
 let file: string | Blob | null = null;
@@ -39,6 +45,8 @@ export default function Page() {
   const router = useRouter();
   const editor = useCreateEditor();
   const mutation = useSaveRecipe();
+  const [tags, setTags] = useState<[{ id: number; tag: string }]>([]);
+  const [ingredients, setIngredients] = useState<IngredientDTO[]>([]);
 
   const form = useAppForm({
     defaultValues: {
@@ -53,7 +61,7 @@ export default function Page() {
         title: title,
         description: description,
         contents: JSON.stringify(editor?.children ?? []),
-        tags: [],
+        tags: tags,
         ingredients: [],
       };
 
@@ -123,7 +131,9 @@ export default function Page() {
             {/* {(field) => <TextField label="description" />} */}
             {(field) => <TextArea field={field} label="Description" />}
           </form.Field>
+          <Tags tags={tags} setTags={setTags} isEditable={true} />
         </div>
+        <IngredientTable ingredients={ingredients} setIngredients={setIngredients} isEditable={true} />
         <div className="h-screen w-full pt-4 pb-4">
           <SettingsProvider>
             <PlateEditor editor={editor} />

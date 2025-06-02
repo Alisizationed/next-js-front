@@ -19,8 +19,7 @@ export default function SignupFormDemo() {
         Welcome to Aceternity
       </h2>
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Login to aceternity if you can because we don&apos;t have a login flow
-        yet
+        Login to recipe.app
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>

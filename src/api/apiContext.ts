@@ -51,6 +51,7 @@ export function useApiContext<
   >,
 ): ApiContext<TQueryFnData, TError, TData, TQueryKey> {
   const session = useSession();
+
   return {
     fetcherOptions: {headers: {Authorization: `Bearer ${session.data?.accessToken}`}},
     queryOptions: {},
