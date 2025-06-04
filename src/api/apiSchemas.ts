@@ -7,7 +7,7 @@ export type UserProfileDTO = {
   /**
    * @format int64
    */
-  keycloakId?: number;
+  keycloakId?: string;
   firstName?: string;
   lastName?: string;
   bio?: string;

@@ -7,16 +7,19 @@ import KeycloakProvider from "next-auth/providers/keycloak";
 /**
  * Extend the session and JWT token types to include additional fields.
  */
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
     } & DefaultSession["user"];
     accessToken?: string;
+    idToken?: string;
     error?: string;
   }
 
   interface JWT {
+    id_token?: string;
     access_token?: string;
     refresh_token?: string;
     expires_at?: number;
@@ -24,6 +27,8 @@ declare module "next-auth" {
     error?: string;
   }
 }
+
+
 
 /**
  * NextAuth configuration with Keycloak and refresh token handling.
@@ -48,6 +53,7 @@ export const authConfig = {
       if (account) {
         return {
           ...token,
+          id_token: account.id_token,
           access_token: account.access_token,
           refresh_token: account.refresh_token,
           expires_at: account.expires_at, // Keycloak returns seconds
@@ -55,7 +61,7 @@ export const authConfig = {
       }
 
       // If token is still valid, return it
-      if (Date.now() < (token.expires_at ?? 0) * 1000) {
+      if (Date.now() < (token?.expires_at ?? 0) * 1000) {
         return token;
       }
 
@@ -80,19 +86,23 @@ export const authConfig = {
               grant_type: "refresh_token",
               refresh_token: token.refresh_token,
             }),
-          }
+          },
         );
 
         const refreshedTokens = await response.json();
 
         if (!response.ok) {
-          throw new Error(refreshedTokens.error_description ?? "Token refresh failed");
+          throw new Error(
+            refreshedTokens.error_description ?? "Token refresh failed",
+          );
         }
 
         return {
           ...token,
+          id_token: refreshedTokens.id_token,
           access_token: refreshedTokens.access_token,
-          expires_at: Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
+          expires_at:
+            Math.floor(Date.now() / 1000) + refreshedTokens.expires_in,
           refresh_token: refreshedTokens.refresh_token ?? token.refresh_token,
         };
       } catch (error) {
@@ -108,9 +118,59 @@ export const authConfig = {
           ...session.user,
           id: token.sub ?? "",
         },
+        idToken: token.id_token,
         accessToken: token.access_token,
         error: token.error,
       };
+    },
+  },
+  events: {
+    async signOut({ token }) {
+      // This runs when NextAuth signOut is called
+      if (token?.refreshToken) {
+        try {
+          const issuerUrl = process.env.AUTH_KEYCLOAK_ISSUER;
+
+          // Use Keycloak's token revocation endpoint for proper logout
+          const revokeUrl = `${issuerUrl}/protocol/openid-connect/revoke`;
+
+          const params = new URLSearchParams();
+          params.append("client_id", process.env.AUTH_KEYCLOAK_ID!);
+          params.append("client_secret", process.env.AUTH_KEYCLOAK_SECRET!);
+          params.append("token", token.refreshToken as string);
+          params.append("token_type_hint", "refresh_token");
+
+          await fetch(revokeUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
+          });
+
+          // Also revoke access token if available
+          if (token?.accessToken) {
+            const accessParams = new URLSearchParams();
+            accessParams.append("client_id", process.env.AUTH_KEYCLOAK_ID!);
+            accessParams.append(
+              "client_secret",
+              process.env.AUTH_KEYCLOAK_SECRET!,
+            );
+            accessParams.append("token", token.accessToken as string);
+            accessParams.append("token_type_hint", "access_token");
+
+            await fetch(revokeUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: accessParams.toString(),
+            });
+          }
+        } catch (err) {
+          console.error("Error during Keycloak token revocation:", err);
+        }
+      }
     },
   },
 } satisfies NextAuthConfig;

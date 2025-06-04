@@ -243,6 +243,8 @@ export const NavbarLogo = () => {
         alt="logo"
         width={30}
         height={30}
+        quality={75}
+        loading="lazy"
       />
       <span className="font-medium text-black dark:text-white">Recipe</span>
     </Link>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -62,7 +63,12 @@ export default function Page() {
         description: description,
         contents: JSON.stringify(editor?.children ?? []),
         tags: tags,
-        ingredients: [],
+        ingredients: ingredients.filter(
+          (ingredient) =>
+            ingredient.quantity != null &&
+            ingredient.measure != "" &&
+            ingredient.name != "",
+        ),
       };
 
       const formData = new FormData();
@@ -86,6 +92,14 @@ export default function Page() {
         if (!file) {
           toast("Error: Image is required");
         }
+        if(ingredients.filter(
+          (ingredient) =>
+            ingredient.quantity != null &&
+            ingredient.measure != "" &&
+            ingredient.name != "",
+        ).length == 0) {
+          toast("Error: ingredients are required.")
+        }
         return errors;
       },
     },
@@ -98,7 +112,6 @@ export default function Page() {
           e.preventDefault();
           await form.handleSubmit();
         }}
-        // className="flex w-80 flex-col gap-3 justify-self-center"
       >
         <div className="flex w-80 flex-col gap-3 justify-self-center">
           <form.Field
@@ -112,7 +125,6 @@ export default function Page() {
                     : undefined,
             }}
           >
-            {/* {(field) => <TextField field={field} />} */}
             {(field) => <TextField field={field} label="Title" />}
           </form.Field>
           <FileUpload onChange={getFile} />
@@ -133,7 +145,11 @@ export default function Page() {
           </form.Field>
           <Tags tags={tags} setTags={setTags} isEditable={true} />
         </div>
-        <IngredientTable ingredients={ingredients} setIngredients={setIngredients} isEditable={true} />
+        <IngredientTable
+          ingredients={ingredients}
+          setIngredients={setIngredients}
+          isEditable={true}
+        />
         <div className="h-screen w-full pt-4 pb-4">
           <SettingsProvider>
             <PlateEditor editor={editor} />

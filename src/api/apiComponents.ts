@@ -734,6 +734,117 @@ export const useSaveRecipe = (
   });
 };
 
+export type GetUserProfileByKeycloakIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: string;
+};
+
+export type GetUserProfileByKeycloakIdError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetUserProfileByKeycloakIdVariables = {
+  pathParams: GetUserProfileByKeycloakIdPathParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetUserProfileByKeycloakId = (
+  variables: GetUserProfileByKeycloakIdVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.UserProfile,
+    GetUserProfileByKeycloakIdError,
+    undefined,
+    {},
+    {},
+    GetUserProfileByKeycloakIdPathParams
+  >({ url: "/user/keycloak/{id}", method: "get", ...variables, signal });
+
+export function getUserProfileByKeycloakIdQuery(
+  variables: GetUserProfileByKeycloakIdVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.UserProfile>;
+};
+
+export function getUserProfileByKeycloakIdQuery(
+  variables: GetUserProfileByKeycloakIdVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<Schemas.UserProfile>)
+    | reactQuery.SkipToken;
+};
+
+export function getUserProfileByKeycloakIdQuery(
+  variables: GetUserProfileByKeycloakIdVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/user/keycloak/{id}",
+      operationId: "getUserProfileByKeycloakId",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetUserProfileByKeycloakId(variables, signal),
+  };
+}
+
+export const useSuspenseGetUserProfileByKeycloakId = <
+  TData = Schemas.UserProfile,
+>(
+  variables: GetUserProfileByKeycloakIdVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.UserProfile,
+      GetUserProfileByKeycloakIdError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    Schemas.UserProfile,
+    GetUserProfileByKeycloakIdError,
+    TData
+  >({
+    ...getUserProfileByKeycloakIdQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetUserProfileByKeycloakId = <TData = Schemas.UserProfile>(
+  variables: GetUserProfileByKeycloakIdVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.UserProfile,
+      GetUserProfileByKeycloakIdError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.UserProfile,
+    GetUserProfileByKeycloakIdError,
+    TData
+  >({
+    ...getUserProfileByKeycloakIdQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetImagePathParams = {
   filename: string;
 };
@@ -930,6 +1041,11 @@ export type QueryOperation =
       path: "/user/";
       operationId: "getAllUserProfiles";
       variables: GetAllUserProfilesVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/user/keycloak/{id}";
+      operationId: "getUserProfileByKeycloakId";
+      variables: GetUserProfileByKeycloakIdVariables | reactQuery.SkipToken;
     }
   | {
       path: "/api/recipe/";

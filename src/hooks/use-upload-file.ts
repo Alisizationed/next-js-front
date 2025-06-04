@@ -5,8 +5,7 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ImageControllerService } from "@/services/openapi/services/ImageControllerService";
-import { fetchSaveImage, useSaveImage } from "@/api/apiComponents";
+import { useSaveImage } from "@/api/apiComponents";
 
 export type UploadedFile<T = unknown> = {
   key: string;

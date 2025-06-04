@@ -49,6 +49,7 @@ import { TableRowElementStatic } from "../ui/table-row-element-static";
 import { TocElementStatic } from "../ui/toc-element-static";
 import { ToggleElementStatic } from "../ui/toggle-element-static";
 import { TableCellHeaderElement } from "../ui/table-cell-element";
+import { HrElement } from "../ui/hr-element";
 
 export const staticComponents = {
   [AudioPlugin.key]: MediaAudioElementStatic,
@@ -72,7 +73,7 @@ export const staticComponents = {
   [HEADING_KEYS.h5]: withProps(HeadingElementStatic, { variant: 'h5' }),
   [HEADING_KEYS.h6]: withProps(HeadingElementStatic, { variant: 'h6' }),
   [HighlightPlugin.key]: HighlightLeafStatic,
-  [HorizontalRulePlugin.key]: HrElementStatic,
+  [HorizontalRulePlugin.key]: HrElement,
   [ImagePlugin.key]: ImageElementStatic,
   [InlineEquationPlugin.key]: InlineEquationElementStatic,
   [ItalicPlugin.key]: withProps(PlateLeaf, { as: 'em' }),
