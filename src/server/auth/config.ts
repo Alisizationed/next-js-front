@@ -120,7 +120,6 @@ export const authConfig = {
         },
         idToken: token.id_token,
         accessToken: token.access_token,
-        error: token.error,
       };
     },
   },

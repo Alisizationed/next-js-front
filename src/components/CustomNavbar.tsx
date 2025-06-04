@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
@@ -71,9 +72,23 @@ const CustomNavbar = () => {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             {status === "authenticated" ? (
-              <NavbarButton variant="secondary" onClick={() => fullLogout()}>
-                Logout
-              </NavbarButton>
+              <>
+                <NavbarButton
+                  variant="secondary"
+                  onClick={async () => {
+                    const res = await fetch(
+                      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`,
+                    );
+                    const data = await res.json();
+                    router.push(data);
+                  }}
+                >
+                  Account
+                </NavbarButton>
+                <NavbarButton variant="secondary" onClick={() => fullLogout()}>
+                  Logout
+                </NavbarButton>
+              </>
             ) : (
               <NavbarButton variant="secondary" onClick={() => signIn()}>
                 Login
@@ -114,16 +129,32 @@ const CustomNavbar = () => {
             ))}
             <div className="flex w-full flex-col gap-4">
               {status === "authenticated" ? (
-                <NavbarButton
-                  onClick={async () => {
-                    setIsMobileMenuOpen(false);
-                    await fullLogout();
-                  }}
-                  variant="primary"
-                  className="w-full"
-                >
-                  Logout
-                </NavbarButton>
+                <>
+                  <NavbarButton
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      const res = await fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`,
+                      );
+                      const data = await res.json();
+                      router.push(data);
+                    }}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Account
+                  </NavbarButton>
+                  <NavbarButton
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      await fullLogout();
+                    }}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Logout
+                  </NavbarButton>
+                </>
               ) : (
                 <NavbarButton
                   onClick={async () => {

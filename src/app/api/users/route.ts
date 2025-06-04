@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// app/api/users/route.ts
-// This runs on the server, not the client!
 'use server'
 
-import { auth } from "@/server/auth"; // Your NextAuth.js auth helper
+import { auth } from "@/server/auth";
 import { NextResponse } from "next/server";
 
-// Helper function to get an admin token from Keycloak
 async function getAdminAccessToken(): Promise<string | null> {
   const KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER!;
   const KEYCLOAK_ADMIN_CLIENT_ID = process.env.AUTH_KEYCLOAK_ID!;
@@ -42,6 +39,7 @@ async function getAdminAccessToken(): Promise<string | null> {
 }
 
 export async function GET(request: Request) {
+  const KEYCLOAK_API = process.env.AUTH_KEYCLOAK_API!;
   const session = await auth();
 
   if (!session) {
@@ -59,19 +57,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const regex = /\/realms\/([^/]+)/;
-  const realmMatch = regex.exec(process.env.AUTH_KEYCLOAK_ISSUER!);
-  const KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER?.split('/realms')[0];
-  const realm = realmMatch ? realmMatch[1] : "";
-
-  if (!realm) {
-    return NextResponse.json(
-      { error: "Could not determine Keycloak realm" },
-      { status: 500 },
-    );
-  }
-
-  const usersUrl = `${KEYCLOAK_ISSUER}/admin/realms/${"recipe-app"}/users`;
+  const usersUrl = `${KEYCLOAK_API}/users`;
   try {
     const keycloakResponse = await fetch(usersUrl, {
       headers: {

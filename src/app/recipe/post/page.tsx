@@ -42,11 +42,11 @@ const getFile = (files: Blob | null) => {
   file = files;
 };
 
-export default function Page() {
+const Page = () => {
   const router = useRouter();
   const editor = useCreateEditor();
   const mutation = useSaveRecipe();
-  const [tags, setTags] = useState<[{ id: number; tag: string }]>([]);
+  const [tags, setTags] = useState<{ id: number; tag: string }[]>([]);
   const [ingredients, setIngredients] = useState<IngredientDTO[]>([]);
 
   const form = useAppForm({
@@ -92,13 +92,15 @@ export default function Page() {
         if (!file) {
           toast("Error: Image is required");
         }
-        if(ingredients.filter(
-          (ingredient) =>
-            ingredient.quantity != null &&
-            ingredient.measure != "" &&
-            ingredient.name != "",
-        ).length == 0) {
-          toast("Error: ingredients are required.")
+        if (
+          ingredients.filter(
+            (ingredient) =>
+              ingredient.quantity != null &&
+              ingredient.measure != "" &&
+              ingredient.name != "",
+          ).length == 0
+        ) {
+          toast("Error: ingredients are required.");
         }
         return errors;
       },
@@ -172,4 +174,6 @@ export default function Page() {
       </form>
     </>
   );
-}
+};
+
+export default Page;
