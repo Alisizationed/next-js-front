@@ -3,16 +3,6 @@
  *
  * @version 1.0
  */
-export type UserProfileDTO = {
-  /**
-   * @format int64
-   */
-  keycloakId?: string;
-  firstName?: string;
-  lastName?: string;
-  bio?: string;
-};
-
 export type IngredientDTO = {
   /**
    * @format int64
@@ -31,10 +21,7 @@ export type RecipeDTO = {
    * @format int64
    */
   id?: number;
-  /**
-   * @format int64
-   */
-  userProfileId?: number;
+  keycloakId?: string;
   image?: string;
   title?: string;
   description?: string;
@@ -51,17 +38,12 @@ export type Tag = {
   tag?: string;
 };
 
-export type UserProfile = {
+export type ShortRecipeDTO = {
   /**
    * @format int64
    */
   id?: number;
-  /**
-   * @format int64
-   */
-  keycloakId?: number;
-  firstName?: string;
-  lastName?: string;
-  profilePicture?: string;
-  bio?: string;
+  keycloakId?: string;
+  image?: string;
+  title?: string;
 };

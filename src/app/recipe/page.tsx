@@ -20,7 +20,6 @@ const RecipeList = () => {
         <BentoGridItem
           key={`recipe-${item.id}`}
           title={item.title}
-          description={item.description}
           image={item.image}
           className={i === 3 || i === 6 ? "md:col-span-2" : ""}
           link={`/recipe/${item.id}`}

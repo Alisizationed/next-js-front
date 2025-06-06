@@ -125,12 +125,10 @@ export const authConfig = {
   },
   events: {
     async signOut({ token }) {
-      // This runs when NextAuth signOut is called
       if (token?.refreshToken) {
         try {
           const issuerUrl = process.env.AUTH_KEYCLOAK_ISSUER;
 
-          // Use Keycloak's token revocation endpoint for proper logout
           const revokeUrl = `${issuerUrl}/protocol/openid-connect/revoke`;
 
           const params = new URLSearchParams();
@@ -147,7 +145,6 @@ export const authConfig = {
             body: params.toString(),
           });
 
-          // Also revoke access token if available
           if (token?.accessToken) {
             const accessParams = new URLSearchParams();
             accessParams.append("client_id", process.env.AUTH_KEYCLOAK_ID!);

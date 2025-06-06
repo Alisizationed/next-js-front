@@ -23,6 +23,8 @@ import { useState } from "react";
 import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
 import type { IngredientDTO } from "@/api/apiSchemas";
+import { useSession } from "next-auth/react";
+import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 
 const { fieldContext, formContext } = createFormHookContexts();
 let file: string | Blob | null = null;
@@ -45,9 +47,13 @@ const getFile = (files: Blob | null) => {
 const Page = () => {
   const router = useRouter();
   const editor = useCreateEditor();
+  const session = useSession();
   const mutation = useSaveRecipe();
   const [tags, setTags] = useState<{ id: number; tag: string }[]>([]);
   const [ingredients, setIngredients] = useState<IngredientDTO[]>([]);
+  const { data } = useGetKeycloakIdByEmail({
+    pathParams: { email: session.data?.user.email ?? "" },
+  });
 
   const form = useAppForm({
     defaultValues: {
@@ -56,8 +62,7 @@ const Page = () => {
     },
     onSubmit: async ({ value: { title, description } }) => {
       const recipe = {
-        userProfileId: 2,
-        // userProfileId: session?.data?.user.id,
+        keycloakId: data,
         image: "",
         title: title,
         description: description,

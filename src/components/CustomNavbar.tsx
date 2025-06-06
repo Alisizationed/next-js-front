@@ -18,8 +18,17 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 
 const CustomNavbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const { data: session, status } = useSession();
+  const { data } = useGetKeycloakIdByEmail({
+    pathParams: { email: session?.user.email ?? "" },
+  });
+
   const navItems = [
     {
       name: "Recipes",
@@ -29,16 +38,18 @@ const CustomNavbar = () => {
       name: "User Profiles",
       link: "/user",
     },
-    {
-      name: "Contact",
-      link: "#contact",
-    },
   ];
+  if (
+    status === "authenticated" &&
+    typeof data === "string" &&
+    data.length > 0
+  ) {
+    navItems.push({
+      name: "My Recipes",
+      link: `/user/${data}/recipe`,
+    });
+  }
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
-
-  const { data: session, status } = useSession();
   const fullLogout = async () => {
     try {
       const response = await fetch("/api/auth/logout");

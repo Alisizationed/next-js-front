@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image, { type ImageLoaderProps } from "next/image";
+import Image from "next/image";
 
 export const BentoGrid = ({
   className,
@@ -26,7 +26,6 @@ export const BentoGrid = ({
 export const BentoGridItem = ({
   className,
   title,
-  description,
   image,
   icon,
   link,
@@ -64,9 +63,6 @@ export const BentoGridItem = ({
           <div className="mt-2 mb-2 text-center font-sans font-bold text-neutral-600 dark:text-neutral-200">
             {title}
           </div>
-          {/* <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
-            {description}
-          </div> */}
         </div>
       </div>
     </Link>
