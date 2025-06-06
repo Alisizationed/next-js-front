@@ -11,10 +11,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        <>
-          {children}
-          <ReactQueryDevtools initialIsOpen={false} />
-        </>
+          <>
+            {children}
+            <ReactQueryDevtools initialIsOpen={false} />
+          </>
       </QueryClientProvider>
     </SessionProvider>
   );

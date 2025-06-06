@@ -25,9 +25,6 @@ const CustomNavbar = () => {
   const router = useRouter();
 
   const { data: session, status } = useSession();
-  const { data } = useGetKeycloakIdByEmail({
-    pathParams: { email: session?.user.email ?? "" },
-  });
 
   const navItems = [
     {
@@ -39,14 +36,10 @@ const CustomNavbar = () => {
       link: "/user",
     },
   ];
-  if (
-    status === "authenticated" &&
-    typeof data === "string" &&
-    data.length > 0
-  ) {
+  if (status === "authenticated") {
     navItems.push({
       name: "My Recipes",
-      link: `/user/${data}/recipe`,
+      link: `/user/${session.user.keycloakId}/recipe`,
     });
   }
 

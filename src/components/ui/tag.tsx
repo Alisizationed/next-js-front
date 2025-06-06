@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Tag } from "@/api/apiSchemas";
 import { cn } from "@udecode/cn";
 import { useState } from "react";
 
@@ -8,7 +9,7 @@ const Tags = ({
   setTags,
   isEditable,
 }: {
-  tags: { id: number; tag: string }[];
+  tags: Tag[];
   setTags?: any;
   isEditable: boolean;
 }) => {
@@ -21,7 +22,6 @@ const Tags = ({
   const addTag = () => {
     setTags([...tags, { tag: tagInput }]);
     setTagInput("");
-    console.log(tags);
   };
 
   if (isEditable)
@@ -29,7 +29,6 @@ const Tags = ({
       <>
         <div className="">
           <div className="mx-auto mt-6 max-w-lg">
-            {/* Tags List */}
             <div className="mb-3 flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <span
@@ -38,7 +37,7 @@ const Tags = ({
                 >
                   {tag.tag}
                   <button
-                    onClick={() => removeTag(tag.tag)}
+                    onClick={() => removeTag(tag.tag ?? "")}
                     className="ml-2 text-gray-500 hover:text-gray-700"
                     aria-label={`Remove ${tag.tag}`}
                     type="button"
@@ -49,7 +48,6 @@ const Tags = ({
               ))}
             </div>
 
-            {/* Input and Button */}
             <div className="flex">
               <input
                 type="text"
@@ -90,7 +88,7 @@ const Tags = ({
     <>
       <div className="mx-auto mt-6 max-w-lg">
         <div className="mb-3 flex flex-wrap gap-2">
-          {tags.map((tag: { id: number; tag: string }) => (
+          {tags.map((tag: Tag) => (
             <span
               key={tag.id}
               className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800"

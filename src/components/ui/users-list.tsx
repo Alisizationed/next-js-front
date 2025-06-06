@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 "use client";
 
@@ -17,9 +19,6 @@ const isTrustedDomain = (url: string): boolean => {
 
 const UserListComponent = ({ user }: { user: UserListRepresentationDTO }) => {
   const router = useRouter();
-  const pictureUrl = user.attributes?.picture?.[0];
-
-  const showNextImage = pictureUrl && isTrustedDomain(pictureUrl);
 
   return (
     <div
@@ -30,9 +29,9 @@ const UserListComponent = ({ user }: { user: UserListRepresentationDTO }) => {
     >
       <div className="flex flex-col gap-4 md:flex-row">
         <div className="h-40 w-40 rounded-full overflow-hidden md:h-14 md:w-14">
-          {showNextImage ? (
+          {isTrustedDomain(user.picture ?? "") ? (
             <Image
-              src={pictureUrl}
+              src={user.picture ?? ""}
               alt={`User ${user.username} profile picture`}
               quality={50}
               width={600}
@@ -43,7 +42,7 @@ const UserListComponent = ({ user }: { user: UserListRepresentationDTO }) => {
             />
           ) : (
             <img
-              src={pictureUrl ?? "/placeholder.png"}
+              src={user.picture ?? "/placeholder.png"}
               alt={`User ${user.username} profile picture`}
               className="h-full w-full object-cover"
             />

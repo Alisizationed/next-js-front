@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
@@ -12,6 +13,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      keycloakId: string;
     } & DefaultSession["user"];
     accessToken?: string;
     idToken?: string;
@@ -27,8 +29,6 @@ declare module "next-auth" {
     error?: string;
   }
 }
-
-
 
 /**
  * NextAuth configuration with Keycloak and refresh token handling.
@@ -112,11 +112,15 @@ export const authConfig = {
     },
 
     session({ session, token }) {
+      const keycloakId = JSON.parse(
+        Buffer.from(token.id_token.split(".")[1], "base64").toString(),
+      ).sub;
       return {
         ...session,
         user: {
           ...session.user,
           id: token.sub ?? "",
+          keycloakId,
         },
         idToken: token.id_token,
         accessToken: token.access_token,

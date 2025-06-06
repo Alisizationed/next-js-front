@@ -10,6 +10,7 @@ import Image from "next/image";
 import { cn } from "@udecode/cn";
 import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
+import LoadingElement from "@/components/ui/loading-circle";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
@@ -17,7 +18,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
     pathParams: { id: resolvedParams.id },
   });
 
-  if (isLoading) return <>Loading</>;
+  if (isLoading) return <LoadingElement/>;
   if (isError) return <>Error</>;
 
   const editor = createSlateEditor({

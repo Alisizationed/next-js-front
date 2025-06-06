@@ -118,7 +118,7 @@ export type UpdateRecipeRequestBody = {
   /**
    * @format binary
    */
-  image: Blob;
+  image?: Blob;
   body: Schemas.RecipeDTO;
 };
 
