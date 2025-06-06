@@ -70,9 +70,9 @@ const Page = () => {
         tags: tags,
         ingredients: ingredients.filter(
           (ingredient) =>
-            ingredient.quantity != null &&
+            ingredient.amount != null &&
             ingredient.measure != "" &&
-            ingredient.name != "",
+            ingredient.ingredient != "",
         ),
       };
 
@@ -100,9 +100,9 @@ const Page = () => {
         if (
           ingredients.filter(
             (ingredient) =>
-              ingredient.quantity != null &&
+              ingredient.amount != null &&
               ingredient.measure != "" &&
-              ingredient.name != "",
+              ingredient.ingredient != "",
           ).length == 0
         ) {
           toast("Error: ingredients are required.");
@@ -147,7 +147,6 @@ const Page = () => {
                     : undefined,
             }}
           >
-            {/* {(field) => <TextField label="description" />} */}
             {(field) => <TextArea field={field} label="Description" />}
           </form.Field>
           <Tags tags={tags} setTags={setTags} isEditable={true} />

@@ -24,12 +24,13 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const editor = createSlateEditor({
     value: JSON.parse(data?.contents),
     plugins: staticPlugins,
+    
   });
 
   return (
     <div
       className={cn(
-        "mx-auto grid max-w-6xl grid-cols-1 gap-y-4 pr-4 pl-4 text-sm md:text-lg",
+        "mx-auto grid max-w-5xl grid-cols-1 gap-y-4 pr-4 pl-4 text-sm md:text-lg",
       )}
     >
       <h1 className="text-2xl font-bold md:text-6xl dark:text-white">

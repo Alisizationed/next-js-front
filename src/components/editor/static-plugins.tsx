@@ -11,7 +11,6 @@ import {
 } from '@udecode/plate-font/react';
 import { HighlightPlugin } from '@udecode/plate-highlight/react';
 import { HorizontalRulePlugin } from '@udecode/plate-horizontal-rule/react';
-import { KbdPlugin } from '@udecode/plate-kbd/react';
 import { ColumnPlugin } from '@udecode/plate-layout/react';
 import { TogglePlugin } from '@udecode/plate-toggle/react';
 
@@ -32,8 +31,6 @@ import { TablePlugin } from '@udecode/plate-table/react';
 import { HeadingPlugin, TocPlugin } from '@udecode/plate-heading/react';
 import { AudioPlugin, FilePlugin, ImagePlugin, MediaEmbedPlugin, VideoPlugin } from '@udecode/plate-media/react';
 import { BasicMarksPlugin, SkipMarkPlugin } from '@udecode/plate-basic-marks/react';
-import { AlignPlugin } from '@udecode/plate-alignment/react';
-import { LineHeightPlugin } from '@udecode/plate-line-height/react';
 import { BlockquotePlugin } from '@udecode/plate-block-quote/react';
 import { CodeBlockPlugin } from '@udecode/plate-code-block/react';
 import { IndentListPlugin } from '@udecode/plate-indent-list/react';
@@ -73,7 +70,7 @@ export const staticPlugins = [
   SkipMarkPlugin,
 
   // Block Style
-  AlignPlugin,
+  alignPlugin,
   IndentPlugin.extend({
     inject: {
       targetPlugins: [
@@ -110,5 +107,5 @@ export const staticPlugins = [
       },
     },
   }),
-  LineHeightPlugin,
+  lineHeightPlugin,
 ];

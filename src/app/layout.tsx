@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Providers } from "./providers";
 import CustomNavbar from "@/components/CustomNavbar";
+import Footer from "@/components/ui/footer";
 
 export const metadata: Metadata = {
   title: "Recipe App",
@@ -28,6 +29,7 @@ export default function RootLayout({
           <>
             <CustomNavbar/>
             {children}
+            <Footer/>
           </>
         </Providers>
       </body>
