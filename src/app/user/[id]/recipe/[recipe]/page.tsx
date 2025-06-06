@@ -82,9 +82,9 @@ const Page = ({
         tags: tags,
         ingredients: ingredients.filter(
           (ingredient) =>
-            ingredient.quantity != null &&
+            ingredient.amount != null &&
             ingredient.measure != "" &&
-            ingredient.name != "",
+            ingredient.ingredient != "",
         ),
       };
 
@@ -114,9 +114,9 @@ const Page = ({
         
         const validIngredients = ingredients.filter(
           (ingredient) =>
-            ingredient.quantity != null &&
+            ingredient.amount != null &&
             ingredient.measure != "" &&
-            ingredient.name != "",
+            ingredient.ingredient != "",
         );
         
         if (validIngredients.length === 0) {

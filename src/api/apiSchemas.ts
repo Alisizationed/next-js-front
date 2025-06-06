@@ -8,11 +8,11 @@ export type IngredientDTO = {
    * @format int64
    */
   id?: number;
-  name?: string;
+  ingredient?: string;
   /**
    * @format int64
    */
-  quantity?: number;
+  amount?: number;
   measure?: string;
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -27,7 +28,7 @@ const IngredientTable = ({
 
   const addRow = (e: any) => {
     e.preventDefault();
-    setIngredients([...ingredients, { name: "", quantity: "", measure: "" }]);
+    setIngredients([...ingredients, { ingredient: "", amount: "", measure: "" }]);
   };
 
   const removeRow = (e: any, index: number) => {
@@ -56,9 +57,9 @@ const IngredientTable = ({
                   <input
                     type="text"
                     className="w-full rounded border px-2 py-1"
-                    value={ingredient.name}
+                    value={ingredient.ingredient}
                     onChange={(e) =>
-                      handleChange(index, "name", e.target.value)
+                      handleChange(index, "ingredient", e.target.value)
                     }
                     placeholder="e.g. Sugar"
                   />
@@ -67,9 +68,9 @@ const IngredientTable = ({
                   <input
                     type="text"
                     className="w-full rounded border px-2 py-1"
-                    value={ingredient.quantity}
+                    value={ingredient.amount}
                     onChange={(e) =>
-                      handleChange(index, "quantity", e.target.value)
+                      handleChange(index, "amount", e.target.value)
                     }
                     placeholder="e.g. 2"
                   />
@@ -113,12 +114,12 @@ const IngredientTable = ({
             <tr key={`ingredient-${index}`}>
               <td className="border p-2">
                 <div className="w-full rounded border px-2 py-1">
-                  {ingredient.name}
+                  {ingredient.ingredient}
                 </div>
               </td>
               <td className="border p-2">
                 <div className="w-full rounded border px-2 py-1">
-                  {ingredient.quantity}
+                  {ingredient.amount}
                 </div>
               </td>
               <td className="border p-2">
