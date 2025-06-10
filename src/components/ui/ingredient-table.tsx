@@ -40,7 +40,7 @@ const IngredientTable = ({
   if (isEditable)
     return (
       <div className="mx-auto max-w-3xl p-4">
-        <h2 className="mb-4 text-xl font-semibold">Ingredients</h2>
+        <h2 className="mb-4 text-xl text-center font-semibold">Ingredients</h2>
         <table className="w-full border border-gray-300 text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -100,7 +100,7 @@ const IngredientTable = ({
 
   return (
     <div className="mx-auto max-w-3xl p-4">
-      <h2 className="mb-4 text-xl font-semibold">Ingredients</h2>
+      <h2 className="mb-4 text-xl text-center font-semibold">Ingredients</h2>
       <table className="w-full border border-gray-300 text-sm">
         <thead className="bg-gray-100">
           <tr>

@@ -31,9 +31,9 @@ export const copilotPlugins = [
         },
         onError: () => {
           // Mock the API response. Remove it when you implement the route /api/ai/copilot
-          api.copilot.setBlockSuggestion({
-            text: stripMarkdown(faker.lorem.sentence()),
-          });
+          // api.copilot.setBlockSuggestion({
+          //   text: stripMarkdown(faker.lorem.sentence()),
+          // });
         },
         onFinish: (_, completion) => {
           if (completion === '0') return;
@@ -51,7 +51,7 @@ export const copilotPlugins = [
         if (!contextEntry) return '';
 
         const prompt = serializeMd(editor, {
-          value: [contextEntry[0] as TElement],
+          value: [contextEntry[0]],
         });
 
         return `Continue the text up to the next punctuation mark:

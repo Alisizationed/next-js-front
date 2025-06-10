@@ -214,7 +214,7 @@ const Page = ({
           >
             {([canSubmit, isSubmitting]) => (
               <SubscribeButton
-                label={isSubmitting ? "Posting..." : "Post"}
+                label={isSubmitting ? "Updating..." : "Update"}
                 form={form}
                 // disabled={!canSubmit || isSubmitting}
               />

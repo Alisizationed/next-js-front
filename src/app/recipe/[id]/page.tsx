@@ -11,6 +11,7 @@ import { cn } from "@udecode/cn";
 import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
 import LoadingElement from "@/components/ui/loading-circle";
+import { RecommendationSection } from "@/components/ui/recommendation-section";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
@@ -24,7 +25,6 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const editor = createSlateEditor({
     value: JSON.parse(data?.contents),
     plugins: staticPlugins,
-    
   });
 
   return (
@@ -52,6 +52,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
       <div>{data?.description}</div>
       <Tags tags={data?.tags} isEditable={false} />
       <PlateStatic editor={editor} components={staticComponents} />
+      <RecommendationSection title={"Recommended for you"} recipeId={data?.id}/>
     </div>
   );
 };

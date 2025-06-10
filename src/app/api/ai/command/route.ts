@@ -1,126 +1,10 @@
-import type { TextStreamPart, ToolSet } from 'ai';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import type { NextRequest } from 'next/server';
-
-import { createOpenAI } from '@ai-sdk/openai';
-import { InvalidArgumentError } from '@ai-sdk/provider';
-import { delay as originalDelay } from '@ai-sdk/provider-utils';
-import { convertToCoreMessages, streamText } from 'ai';
 import { NextResponse } from 'next/server';
 
-/**
- * Detects the first chunk in a buffer.
- *
- * @param buffer - The buffer to detect the first chunk in.
- * @returns The first detected chunk, or `undefined` if no chunk was detected.
- */
-export type ChunkDetector = (buffer: string) => string | null | undefined;
-
-type delayer = (buffer: string) => number;
-
-/**
- * Smooths text streaming output.
- *
- * @param delayInMs - The delay in milliseconds between each chunk. Defaults to
- *   10ms. Can be set to `null` to skip the delay.
- * @param chunking - Controls how the text is chunked for streaming. Use "word"
- *   to stream word by word (default), "line" to stream line by line, or provide
- *   a custom RegExp pattern for custom chunking.
- * @returns A transform stream that smooths text streaming output.
- */
-function smoothStream<TOOLS extends ToolSet>({
-  _internal: { delay = originalDelay } = {},
-  chunking = 'word',
-  delayInMs = 10,
-}: {
-  /** Internal. For test use only. May change without notice. */
-  _internal?: {
-    delay?: (delayInMs: number | null) => Promise<void>;
-  };
-  chunking?: ChunkDetector | RegExp | 'line' | 'word';
-  delayInMs?: delayer | number | null;
-} = {}): (options: {
-  tools: TOOLS;
-}) => TransformStream<TextStreamPart<TOOLS>, TextStreamPart<TOOLS>> {
-  let detectChunk: ChunkDetector;
-
-  if (typeof chunking === 'function') {
-    detectChunk = (buffer) => {
-      const match = chunking(buffer);
-
-      if (match == null) {
-        return null;
-      }
-
-      if (match.length === 0) {
-        throw new Error(`Chunking function must return a non-empty string.`);
-      }
-
-      if (!buffer.startsWith(match)) {
-        throw new Error(
-          `Chunking function must return a match that is a prefix of the buffer. Received: "${match}" expected to start with "${buffer}"`
-        );
-      }
-
-      return match;
-    };
-  } else {
-    const chunkingRegex =
-      typeof chunking === 'string' ? CHUNKING_REGEXPS[chunking] : chunking;
-
-    if (chunkingRegex == null) {
-      throw new InvalidArgumentError({
-        argument: 'chunking',
-        message: `Chunking must be "word" or "line" or a RegExp. Received: ${chunking}`,
-      });
-    }
-
-    detectChunk = (buffer) => {
-      const match = chunkingRegex.exec(buffer);
-
-      if (!match) {
-        return null;
-      }
-
-      return buffer.slice(0, match.index) + match?.[0];
-    };
-  }
-
-  return () => {
-    let buffer = '';
-
-    return new TransformStream<TextStreamPart<TOOLS>, TextStreamPart<TOOLS>>({
-      async transform(chunk, controller) {
-        if (chunk.type !== 'text-delta') {
-          console.log(buffer, 'finished');
-
-          if (buffer.length > 0) {
-            controller.enqueue({ textDelta: buffer, type: 'text-delta' });
-            buffer = '';
-          }
-
-          controller.enqueue(chunk);
-          return;
-        }
-
-        buffer += chunk.textDelta;
-
-        let match;
-
-        while ((match = detectChunk(buffer)) != null) {
-          controller.enqueue({ textDelta: match, type: 'text-delta' });
-          buffer = buffer.slice(match.length);
-
-          const _delayInMs =
-            typeof delayInMs === 'number'
-              ? delayInMs
-              : (delayInMs?.(buffer) ?? 10);
-
-          await delay(_delayInMs);
-        }
-      },
-    });
-  };
-}
+export const runtime = 'edge';
 
 const CHUNKING_REGEXPS = {
   line: /\n+/m,
@@ -128,86 +12,130 @@ const CHUNKING_REGEXPS = {
   word: /\S+\s+/m,
 };
 
+type ChunkDetector = (buffer: string) => string | null | undefined;
+
 export async function POST(req: NextRequest) {
-  const { apiKey: key, messages, system } = await req.json();
+  const { prompt, system, model = 'llama3.1' } = await req.json();
 
-  const apiKey = key || process.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'Missing OpenAI API key.' },
-      { status: 401 }
-    );
+  if (!prompt) {
+    return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const openai = createOpenAI({ apiKey });
+  const ollamaUrl = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 
-  let isInCodeBlock = false;
-  let isInTable = false;
-  let isInList = false;
-  let isInLink = false;
   try {
-    const result = streamText({
-      experimental_transform: smoothStream({
-        chunking: (buffer) => {
-          // Check for code block markers
-          if (/```[^\s]+/.test(buffer)) {
-            isInCodeBlock = true;
-          } else if (isInCodeBlock && buffer.includes('```')) {
-            isInCodeBlock = false;
-          }
-          // test case: should not deserialize link with markdown syntax
-          if (buffer.includes('http')) {
-            isInLink = true;
-          } else if (buffer.includes('https')) {
-            isInLink = true;
-          } else if (buffer.includes('\n') && isInLink) {
-            isInLink = false;
-          }
-          if (buffer.includes('*') || buffer.includes('-')) {
-            isInList = true;
-          } else if (buffer.includes('\n') && isInList) {
-            isInList = false;
-          }
-          // Simple table detection: enter on |, exit on double newline
-          if (!isInTable && buffer.includes('|')) {
-            isInTable = true;
-          } else if (isInTable && buffer.includes('\n\n')) {
-            isInTable = false;
-          }
-
-          // Use line chunking for code blocks and tables, word chunking otherwise
-          // Choose the appropriate chunking strategy based on content type
-          let match;
-
-          if (isInCodeBlock || isInTable || isInLink) {
-            // Use line chunking for code blocks and tables
-            match = CHUNKING_REGEXPS.line.exec(buffer);
-          } else if (isInList) {
-            // Use list chunking for lists
-            match = CHUNKING_REGEXPS.list.exec(buffer);
-          } else {
-            // Use word chunking for regular text
-            match = CHUNKING_REGEXPS.word.exec(buffer);
-          }
-          if (!match) {
-            return null;
-          }
-
-          return buffer.slice(0, match.index) + match?.[0];
-        },
-        delayInMs: () => (isInCodeBlock || isInTable ? 100 : 30),
+    const response = await fetch(`${ollamaUrl}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        prompt: system ? `${system}\n\n${prompt}` : prompt,
+        stream: true,
       }),
-      maxTokens: 2048,
-      messages: convertToCoreMessages(messages),
-      model: openai('gpt-4o'),
-      system: system,
     });
 
-    return result.toDataStreamResponse();
-  } catch {
+    if (!response.ok || !response.body) {
+      const errText = await response.text();
+      return NextResponse.json({ error: errText }, { status: response.status });
+    }
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    const reader = response.body.getReader();
+
+    // Detect chunk based on context (simplified for clarity)
+    let isInCodeBlock = false;
+    let isInTable = false;
+    let isInList = false;
+    let isInLink = false;
+
+    function detectChunk(buffer: string): string | null {
+      // Toggle code block state
+      if (/```/.test(buffer)) {
+        isInCodeBlock = !isInCodeBlock;
+      }
+      // Link detection (very rough)
+      if (buffer.includes('http')) isInLink = true;
+      if (buffer.includes('\n')) isInLink = false;
+
+      if (buffer.includes('*') || buffer.includes('-')) isInList = true;
+      if (buffer.includes('\n')) isInList = false;
+
+      if (buffer.includes('|')) isInTable = true;
+      if (buffer.includes('\n\n')) isInTable = false;
+
+      let match;
+      if (isInCodeBlock || isInTable || isInLink) {
+        match = CHUNKING_REGEXPS.line.exec(buffer);
+      } else if (isInList) {
+        match = CHUNKING_REGEXPS.list.exec(buffer);
+      } else {
+        match = CHUNKING_REGEXPS.word.exec(buffer);
+      }
+
+      if (!match) return null;
+      return buffer.slice(0, match.index + match[0].length);
+    }
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split lines, but keep incomplete line in buffer
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const json = JSON.parse(line);
+              if (json.done) {
+                controller.close();
+                return;
+              }
+
+              const content: string = json.response || '';
+
+              let innerBuffer = content;
+              let chunk;
+
+              while ((chunk = detectChunk(innerBuffer)) !== null) {
+                controller.enqueue(encoder.encode(chunk));
+                innerBuffer = innerBuffer.slice(chunk.length);
+
+                // Delay more for code blocks or tables for smooth streaming
+                const delay = isInCodeBlock || isInTable ? 100 : 30;
+                await new Promise((r) => setTimeout(r, delay));
+              }
+
+              // Enqueue any remaining text
+              if (innerBuffer.length > 0) {
+                controller.enqueue(encoder.encode(innerBuffer));
+              }
+            } catch {
+              // Ignore JSON parse errors (usually incomplete line)
+            }
+          }
+        }
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        // Do NOT set Transfer-Encoding header manually in Edge runtime
+      },
+    });
+  } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to process AI request' },
+      { error: 'Failed to stream response from Ollama' },
       { status: 500 }
     );
   }

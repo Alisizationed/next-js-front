@@ -490,6 +490,130 @@ export const useGetAllUsersRecipes = <TData = GetAllUsersRecipesResponse,>(
   });
 };
 
+export type GetRecommendedRecipesPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+  /**
+   * @format int64
+   */
+  limit: number;
+};
+
+export type GetRecommendedRecipesError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetRecommendedRecipesResponse = Schemas.RecipeDTO[];
+
+export type GetRecommendedRecipesVariables = {
+  pathParams: GetRecommendedRecipesPathParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetRecommendedRecipes = (
+  variables: GetRecommendedRecipesVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetRecommendedRecipesResponse,
+    GetRecommendedRecipesError,
+    undefined,
+    {},
+    {},
+    GetRecommendedRecipesPathParams
+  >({
+    url: "/api/recipe/recommended/{id}/{limit}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getRecommendedRecipesQuery(
+  variables: GetRecommendedRecipesVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetRecommendedRecipesResponse>;
+};
+
+export function getRecommendedRecipesQuery(
+  variables: GetRecommendedRecipesVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetRecommendedRecipesResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getRecommendedRecipesQuery(
+  variables: GetRecommendedRecipesVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/recommended/{id}/{limit}",
+      operationId: "getRecommendedRecipes",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetRecommendedRecipes(variables, signal),
+  };
+}
+
+export const useSuspenseGetRecommendedRecipes = <
+  TData = GetRecommendedRecipesResponse,
+>(
+  variables: GetRecommendedRecipesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetRecommendedRecipesResponse,
+      GetRecommendedRecipesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetRecommendedRecipesResponse,
+    GetRecommendedRecipesError,
+    TData
+  >({
+    ...getRecommendedRecipesQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetRecommendedRecipes = <
+  TData = GetRecommendedRecipesResponse,
+>(
+  variables: GetRecommendedRecipesVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetRecommendedRecipesResponse,
+      GetRecommendedRecipesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetRecommendedRecipesResponse,
+    GetRecommendedRecipesError,
+    TData
+  >({
+    ...getRecommendedRecipesQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetImagePathParams = {
   filename: string;
 };
@@ -686,6 +810,11 @@ export type QueryOperation =
       path: "/api/recipe/user/{id}";
       operationId: "getAllUsersRecipes";
       variables: GetAllUsersRecipesVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/recommended/{id}/{limit}";
+      operationId: "getRecommendedRecipes";
+      variables: GetRecommendedRecipesVariables | reactQuery.SkipToken;
     }
   | {
       path: "/api/recipe/images/{filename}";
