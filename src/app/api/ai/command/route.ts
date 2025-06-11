@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const ollamaUrl = process.env.OLLAMA_URL ?? 'http://localhost:11434';
+  const ollamaUrl = process.env.OLLAMA_URL ?? 'http://localhost:13434';
 
   try {
     const response = await fetch(`${ollamaUrl}/api/generate`, {

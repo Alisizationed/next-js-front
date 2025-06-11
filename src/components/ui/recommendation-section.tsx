@@ -29,43 +29,50 @@ export const RecommendationSection = ({
   };
 
   return (
-    <section className="relative my-12">
+    <section className="relative my-12 group">
       <h2 className="mb-4 text-xl font-semibold text-neutral-800 dark:text-neutral-100">
         {title}
       </h2>
+
       <div className="relative">
-        <button
-          onClick={() => scroll(-300)}
-          className="absolute top-1/2 left-0 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md transition hover:scale-105 dark:bg-neutral-900"
-          aria-label="Scroll Left"
-        >
-          <ChevronLeft className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
-        </button>
+        {/* Scroll Button Wrapper */}
+        <div className="relative px-10">
+          {/* Left Scroll Button */}
+          <button
+            onClick={() => scroll(-300)}
+            className="absolute left-0 top-0 z-20 hidden h-full w-10 items-center justify-center bg-white text-neutral-700 transition hover:bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 group-hover:flex"
+            aria-label="Scroll Left"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
 
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth px-10 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {data?.map((item, idx) => (
-            <div key={idx} className="min-w-[300px] flex-shrink-0">
-              <BentoGridItem
-                key={`recipe-${item.id}`}
-                title={item.title}
-                image={item.image}
-                link={`/recipe/${item.id}`}
-                className="h-full"
-              />
-            </div>
-          ))}
+          {/* Right Scroll Button */}
+          <button
+            onClick={() => scroll(300)}
+            className="absolute right-0 top-0 z-20 hidden h-full w-10 items-center justify-center bg-white text-neutral-700 transition hover:bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 group-hover:flex"
+            aria-label="Scroll Right"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+
+          {/* Scrollable Container */}
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {data?.map((item, idx) => (
+              <div key={idx} className="min-w-[300px] flex-shrink-0">
+                <BentoGridItem
+                  key={`recipe-${item.id}`}
+                  title={item.title}
+                  image={item.image}
+                  link={`/recipe/${item.id}`}
+                  className="h-full"
+                />
+              </div>
+            ))}
+          </div>
         </div>
-
-        <button
-          onClick={() => scroll(300)}
-          className="absolute top-1/2 right-0 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md transition hover:scale-105 dark:bg-neutral-900"
-          aria-label="Scroll Right"
-        >
-          <ChevronRight className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
-        </button>
       </div>
     </section>
   );
