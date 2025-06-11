@@ -1,52 +1,53 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import { type NodeEntry, isHotkey } from '@udecode/plate';
+import { type NodeEntry, isHotkey } from "@udecode/plate";
 import {
   AIChatPlugin,
   useEditorChat,
   useLastAssistantMessage,
-} from '@udecode/plate-ai/react';
+} from "@udecode/plate-ai/react";
 import {
   BlockSelectionPlugin,
   useIsSelecting,
-} from '@udecode/plate-selection/react';
+} from "@udecode/plate-selection/react";
 import {
   useEditorPlugin,
   useHotkeys,
   usePluginOption,
-} from '@udecode/plate/react';
-import { Command as CommandPrimitive } from 'cmdk';
-import { Loader2Icon } from 'lucide-react';
+} from "@udecode/plate/react";
+import { Command as CommandPrimitive } from "cmdk";
+import { Loader2Icon } from "lucide-react";
 
-import { Command, CommandList } from '@/components/ui/command';
+import { Command, CommandList } from "@/components/ui/command";
 import {
   Popover,
   PopoverAnchor,
   PopoverContent,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { useChat } from '@/components/editor/use-chat';
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { useChat } from "@/components/editor/use-chat";
 
-import { AIChatEditor } from './ai-chat-editor';
-import { AIMenuItems } from './ai-menu-items';
+import { AIChatEditor } from "./ai-chat-editor";
+import { AIMenuItems } from "./ai-menu-items";
 
 export function AIMenu() {
   const { api, editor } = useEditorPlugin(AIChatPlugin);
-  const open = usePluginOption(AIChatPlugin, 'open');
-  const mode = usePluginOption(AIChatPlugin, 'mode');
-  const streaming = usePluginOption(AIChatPlugin, 'streaming');
+  const open = usePluginOption(AIChatPlugin, "open");
+  const mode = usePluginOption(AIChatPlugin, "mode");
+  const streaming = usePluginOption(AIChatPlugin, "streaming");
   const isSelecting = useIsSelecting();
 
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
 
   const chat = useChat();
 
-  const { input, messages, setInput, status } = chat;
+  const { input, messages, setInput, status, error } = chat;
   const [anchorElement, setAnchorElement] = React.useState<HTMLElement | null>(
-    null
+    null,
   );
 
   const content = useLastAssistantMessage()?.content;
@@ -59,7 +60,6 @@ export function AIMenu() {
         setAnchorElement(anchorDom);
       }, 0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streaming]);
 
   const setOpen = (open: boolean) => {
@@ -83,7 +83,7 @@ export function AIMenu() {
     onOpenChange: (open) => {
       if (!open) {
         setAnchorElement(null);
-        setInput('');
+        setInput("");
       }
     },
     onOpenCursor: () => {
@@ -103,23 +103,23 @@ export function AIMenu() {
   });
 
   useHotkeys(
-    'meta+j',
+    "meta+j",
     () => {
       api.aiChat.show();
     },
-    { enableOnContentEditable: true, enableOnFormTags: true }
+    { enableOnContentEditable: true, enableOnFormTags: true },
   );
 
-  useHotkeys('esc', () => {
+  useHotkeys("esc", () => {
     api.aiChat.stop();
 
     // remove when you implement the route /api/ai/command
     // chat._abortFakeStream();
   });
 
-  const isLoading = status === 'streaming' || status === 'submitted';
+  const isLoading = status === "streaming" || status === "submitted";
 
-  if (isLoading && mode === 'insert') {
+  if (isLoading && mode === "insert") {
     return null;
   }
 
@@ -145,31 +145,30 @@ export function AIMenu() {
           value={value}
           onValueChange={setValue}
         >
-          {mode === 'chat' && isSelecting && content && (
+          {mode === "chat" && isSelecting && content && (
             <AIChatEditor content={content} />
           )}
-
           {isLoading ? (
-            <div className="flex grow items-center gap-2 p-2 text-sm text-muted-foreground select-none">
+            <div className="text-muted-foreground flex grow items-center gap-2 p-2 text-sm select-none">
               <Loader2Icon className="size-4 animate-spin" />
-              {messages.length > 1 ? 'Editing...' : 'Thinking...'}
+              {messages.length > 1 ? "Editing..." : "Thinking..."}
             </div>
           ) : (
             <CommandPrimitive.Input
               className={cn(
-                'flex h-9 w-full min-w-0 border-input bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30',
-                'aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
-                'border-b focus-visible:ring-transparent'
+                "border-input placeholder:text-muted-foreground dark:bg-input/30 flex h-9 w-full min-w-0 bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none md:text-sm",
+                "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+                "border-b focus-visible:ring-transparent",
               )}
               value={input}
               onKeyDown={(e) => {
-                if (isHotkey('backspace')(e) && input.length === 0) {
+                if (isHotkey("backspace")(e) && input.length === 0) {
                   e.preventDefault();
                   api.aiChat.hide();
                 }
-                if (isHotkey('enter')(e) && !e.shiftKey && !value) {
+                if (isHotkey("enter")(e) && !e.shiftKey && !value) {
                   e.preventDefault();
-                  void api.aiChat.submit();
+                  void api.aiChat.submit({ prompt: input });
                 }
               }}
               onValueChange={setInput}

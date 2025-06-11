@@ -40,12 +40,11 @@ export const useChat = () => {
       const res = await fetch(input, fetchInit);
 
       if (!res.ok) {
-        const errorBody = await res.text();
         throw new Error(
           `AI API request failed: ${res.status} ${res.statusText} - ${errorBody}`
         );
       }
-
+      
       return res;
     },
   });

@@ -55,7 +55,7 @@ interface SettingsContextType {
 }
 
 export const models: Model[] = [
-  { label: 'llama3.1', value: 'llama3.1' },
+  { label: 'llama3.1:8b', value: 'llama3.1:8b' },
 ];
 
 const SettingsContext = React.createContext<SettingsContextType | undefined>(

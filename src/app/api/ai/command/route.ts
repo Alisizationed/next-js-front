@@ -15,7 +15,7 @@ const CHUNKING_REGEXPS = {
 type ChunkDetector = (buffer: string) => string | null | undefined;
 
 export async function POST(req: NextRequest) {
-  const { prompt, system, model = 'llama3.1' } = await req.json();
+  const { prompt, system, model = 'llama3.1:8b' } = await req.json();
 
   if (!prompt) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
