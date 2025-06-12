@@ -614,6 +614,125 @@ export const useGetRecommendedRecipes = <
   });
 };
 
+export type GetAllRecipesPageableQueryParams = {
+  /**
+   * @format int64
+   */
+  page: number;
+  /**
+   * @format int64
+   */
+  size: number;
+};
+
+export type GetAllRecipesPageableError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetAllRecipesPageableResponse = Schemas.ShortRecipeDTO[];
+
+export type GetAllRecipesPageableVariables = {
+  queryParams: GetAllRecipesPageableQueryParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetAllRecipesPageable = (
+  variables: GetAllRecipesPageableVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetAllRecipesPageableResponse,
+    GetAllRecipesPageableError,
+    undefined,
+    {},
+    GetAllRecipesPageableQueryParams,
+    {}
+  >({ url: "/api/recipe/pageable", method: "get", ...variables, signal });
+
+export function getAllRecipesPageableQuery(
+  variables: GetAllRecipesPageableVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetAllRecipesPageableResponse>;
+};
+
+export function getAllRecipesPageableQuery(
+  variables: GetAllRecipesPageableVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetAllRecipesPageableResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getAllRecipesPageableQuery(
+  variables: GetAllRecipesPageableVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/pageable",
+      operationId: "getAllRecipesPageable",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetAllRecipesPageable(variables, signal),
+  };
+}
+
+export const useSuspenseGetAllRecipesPageable = <
+  TData = GetAllRecipesPageableResponse,
+>(
+  variables: GetAllRecipesPageableVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetAllRecipesPageableResponse,
+      GetAllRecipesPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetAllRecipesPageableResponse,
+    GetAllRecipesPageableError,
+    TData
+  >({
+    ...getAllRecipesPageableQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetAllRecipesPageable = <
+  TData = GetAllRecipesPageableResponse,
+>(
+  variables: GetAllRecipesPageableVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetAllRecipesPageableResponse,
+      GetAllRecipesPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetAllRecipesPageableResponse,
+    GetAllRecipesPageableError,
+    TData
+  >({
+    ...getAllRecipesPageableQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetImagePathParams = {
   filename: string;
 };
@@ -795,6 +914,88 @@ export const useGetImageV2 = <TData = GetImageV2Response,>(
   });
 };
 
+export type GetAllRecipesCountError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetAllRecipesCountVariables = ApiContext["fetcherOptions"];
+
+export const fetchGetAllRecipesCount = (
+  variables: GetAllRecipesCountVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<number, GetAllRecipesCountError, undefined, {}, {}, {}>({
+    url: "/api/recipe/count",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getAllRecipesCountQuery(
+  variables: GetAllRecipesCountVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<number>;
+};
+
+export function getAllRecipesCountQuery(
+  variables: GetAllRecipesCountVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<number>)
+    | reactQuery.SkipToken;
+};
+
+export function getAllRecipesCountQuery(
+  variables: GetAllRecipesCountVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/count",
+      operationId: "getAllRecipesCount",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetAllRecipesCount(variables, signal),
+  };
+}
+
+export const useSuspenseGetAllRecipesCount = <TData = number,>(
+  variables: GetAllRecipesCountVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<number, GetAllRecipesCountError, TData>,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<number, GetAllRecipesCountError, TData>({
+    ...getAllRecipesCountQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetAllRecipesCount = <TData = number,>(
+  variables: GetAllRecipesCountVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<number, GetAllRecipesCountError, TData>,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<number, GetAllRecipesCountError, TData>({
+    ...getAllRecipesCountQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/api/recipe/{id}";
@@ -817,6 +1018,11 @@ export type QueryOperation =
       variables: GetRecommendedRecipesVariables | reactQuery.SkipToken;
     }
   | {
+      path: "/api/recipe/pageable";
+      operationId: "getAllRecipesPageable";
+      variables: GetAllRecipesPageableVariables | reactQuery.SkipToken;
+    }
+  | {
       path: "/api/recipe/images/{filename}";
       operationId: "getImage";
       variables: GetImageVariables | reactQuery.SkipToken;
@@ -825,4 +1031,9 @@ export type QueryOperation =
       path: "/api/recipe/images/v2/{filename}";
       operationId: "getImageV2";
       variables: GetImageV2Variables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/count";
+      operationId: "getAllRecipesCount";
+      variables: GetAllRecipesCountVariables | reactQuery.SkipToken;
     };

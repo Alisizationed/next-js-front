@@ -20,8 +20,6 @@ export const useChat = () => {
     }
   };
 
-  console.log(abortControllerRef);
-  
   const chat = useBaseChat({
     id: 'editor',
     api: '/api/ai/copilot',
@@ -54,8 +52,6 @@ export const useChat = () => {
       try {
         const res = await fetch(input, fetchInit);
         
-        console.log(res);
-        console.log('res');
         if (!res.ok) {
           // Handle different error scenarios
           if (res.status === 401) {

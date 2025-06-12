@@ -24,7 +24,6 @@ import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
 import type { IngredientDTO } from "@/api/apiSchemas";
 import { useSession } from "next-auth/react";
-import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 import LoadingElement from "@/components/ui/loading-circle";
 import RecipePopup from "@/components/ui/recipe-popup";
 
@@ -56,10 +55,6 @@ const Page = ({
   const [file, setFile] = useState<string | Blob | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const { data: keycloakData } = useGetKeycloakIdByEmail({
-    pathParams: { email: session.data?.user.email ?? "" },
-  });
-
   const {
     data: recipe1,
     isLoading,
@@ -75,7 +70,7 @@ const Page = ({
     },
     onSubmit: async ({ value: { title, description } }) => {
       const recipe = {
-        keycloakId: keycloakData,
+        keycloakId: session.data?.user.keycloakId,
         image: recipe1?.image,
         title: title,
         description: description,

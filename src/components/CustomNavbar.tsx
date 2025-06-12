@@ -18,7 +18,6 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 
 const CustomNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

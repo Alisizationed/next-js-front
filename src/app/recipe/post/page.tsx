@@ -24,7 +24,6 @@ import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
 import type { IngredientDTO } from "@/api/apiSchemas";
 import { useSession } from "next-auth/react";
-import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 import RecipePopup from "@/components/ui/recipe-popup";
 
 const { fieldContext, formContext } = createFormHookContexts();
@@ -52,9 +51,6 @@ const Page = () => {
   const mutation = useSaveRecipe();
   const [tags, setTags] = useState<{ id: number; tag: string }[]>([]);
   const [ingredients, setIngredients] = useState<IngredientDTO[]>([]);
-  const { data } = useGetKeycloakIdByEmail({
-    pathParams: { email: session.data?.user.email ?? "" },
-  });
 
   const form = useAppForm({
     defaultValues: {
@@ -63,7 +59,7 @@ const Page = () => {
     },
     onSubmit: async ({ value: { title, description } }) => {
       const recipe = {
-        keycloakId: data,
+        keycloakId: session.data?.user.keycloakId,
         image: "",
         title: title,
         description: description,
