@@ -25,6 +25,7 @@ import IngredientTable from "@/components/ui/ingredient-table";
 import type { IngredientDTO } from "@/api/apiSchemas";
 import { useSession } from "next-auth/react";
 import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
+import RecipePopup from "@/components/ui/recipe-popup";
 
 const { fieldContext, formContext } = createFormHookContexts();
 let file: string | Blob | null = null;
@@ -120,42 +121,44 @@ const Page = () => {
           await form.handleSubmit();
         }}
       >
-        <div className="flex w-80 flex-col gap-3 justify-self-center">
-          <form.Field
-            name="title"
-            validators={{
-              onChange: ({ value }) =>
-                !value
-                  ? "A title is required"
-                  : value.length < 3
-                    ? "Title must be at least 3 characters"
-                    : undefined,
-            }}
-          >
-            {(field) => <TextField field={field} label="Title" />}
-          </form.Field>
-          <FileUpload onChange={getFile} />
+        <div className="flex justify-center py-4">
+          <RecipePopup triggerText="Open others" title="Recipe">
+            <form.Field
+              name="title"
+              validators={{
+                onChange: ({ value }) =>
+                  !value
+                    ? "A title is required"
+                    : value.length < 3
+                      ? "Title must be at least 3 characters"
+                      : undefined,
+              }}
+            >
+              {(field) => <TextField field={field} label="Title" />}
+            </form.Field>
+            <FileUpload onChange={getFile} />
 
-          <form.Field
-            name="description"
-            validators={{
-              onChange: ({ value }) =>
-                !value
-                  ? "A description is required"
-                  : value.length < 3
-                    ? "Description must be at least 3 characters"
-                    : undefined,
-            }}
-          >
-            {(field) => <TextArea field={field} label="Description" />}
-          </form.Field>
-          <Tags tags={tags} setTags={setTags} isEditable={true} />
+            <form.Field
+              name="description"
+              validators={{
+                onChange: ({ value }) =>
+                  !value
+                    ? "A description is required"
+                    : value.length < 3
+                      ? "Description must be at least 3 characters"
+                      : undefined,
+              }}
+            >
+              {(field) => <TextArea field={field} label="Description" />}
+            </form.Field>
+            <Tags tags={tags} setTags={setTags} isEditable={true} />
+            <IngredientTable
+              ingredients={ingredients}
+              setIngredients={setIngredients}
+              isEditable={true}
+            />
+          </RecipePopup>
         </div>
-        <IngredientTable
-          ingredients={ingredients}
-          setIngredients={setIngredients}
-          isEditable={true}
-        />
         <div className="h-screen w-full pt-4 pb-4">
           <SettingsProvider>
             <PlateEditor editor={editor} />

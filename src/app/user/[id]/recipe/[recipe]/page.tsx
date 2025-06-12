@@ -26,6 +26,7 @@ import type { IngredientDTO } from "@/api/apiSchemas";
 import { useSession } from "next-auth/react";
 import { useGetKeycloakIdByEmail } from "@/api-1/api1Components";
 import LoadingElement from "@/components/ui/loading-circle";
+import RecipePopup from "@/components/ui/recipe-popup";
 
 const { fieldContext, formContext } = createFormHookContexts();
 
@@ -95,10 +96,10 @@ const Page = ({
       formData.append("body", JSON.stringify(recipe));
 
       await mutation.mutateAsync({
-          body: formData as any,
-          pathParams: {
-              id: resolvedParams.recipe
-          }
+        body: formData as any,
+        pathParams: {
+          id: resolvedParams.recipe,
+        },
       });
       router.push(`/recipe/${resolvedParams.recipe}`);
     },
@@ -111,14 +112,14 @@ const Page = ({
         if (!value.description) {
           errors.fields.description = "Description is required";
         }
-        
+
         const validIngredients = ingredients.filter(
           (ingredient) =>
             ingredient.amount != null &&
             ingredient.measure != "" &&
             ingredient.ingredient != "",
         );
-        
+
         if (validIngredients.length === 0) {
           toast.error("Error: ingredients are required.");
         }
@@ -135,7 +136,7 @@ const Page = ({
     if (recipe1 && !isInitialized) {
       form.setFieldValue("title", recipe1.title ?? "");
       form.setFieldValue("description", recipe1.description ?? "");
-      
+
       if (recipe1.contents && editor) {
         try {
           editor.children = JSON.parse(recipe1.contents);
@@ -143,10 +144,10 @@ const Page = ({
           console.error("Failed to parse recipe contents:", error);
         }
       }
-      
+
       setIngredients(recipe1.ingredients ?? []);
       setTags(recipe1.tags ?? []);
-      
+
       setIsInitialized(true);
     }
   }, [recipe1, editor, form, isInitialized]);
@@ -162,52 +163,54 @@ const Page = ({
           await form.handleSubmit();
         }}
       >
-        <div className="flex w-80 flex-col gap-3 justify-self-center">
-          <form.Field
-            name="title"
-            validators={{
-              onChange: ({ value }) =>
-                !value
-                  ? "A title is required"
-                  : value.length < 3
-                    ? "Title must be at least 3 characters"
-                    : undefined,
-            }}
-          >
-            {(field) => <TextField field={field} label="Title" />}
-          </form.Field>
-          
-          <FileUpload onChange={getFile} />
+        <div className="flex justify-center py-4">
+          <RecipePopup triggerText="Open others" title="Recipe">
+            <form.Field
+              name="title"
+              validators={{
+                onChange: ({ value }) =>
+                  !value
+                    ? "A title is required"
+                    : value.length < 3
+                      ? "Title must be at least 3 characters"
+                      : undefined,
+              }}
+            >
+              {(field) => <TextField field={field} label="Title" />}
+            </form.Field>
 
-          <form.Field
-            name="description"
-            validators={{
-              onChange: ({ value }) =>
-                !value
-                  ? "A description is required"
-                  : value.length < 3
-                    ? "Description must be at least 3 characters"
-                    : undefined,
-            }}
-          >
-            {(field) => <TextArea field={field} label="Description" />}
-          </form.Field>
-          
-          <Tags tags={tags} setTags={setTags} isEditable={true} />
+            <FileUpload onChange={getFile} />
+
+            <form.Field
+              name="description"
+              validators={{
+                onChange: ({ value }) =>
+                  !value
+                    ? "A description is required"
+                    : value.length < 3
+                      ? "Description must be at least 3 characters"
+                      : undefined,
+              }}
+            >
+              {(field) => <TextArea field={field} label="Description" />}
+            </form.Field>
+
+            <Tags tags={tags} setTags={setTags} isEditable={true} />
+
+            <IngredientTable
+              ingredients={ingredients}
+              setIngredients={setIngredients}
+              isEditable={true}
+            />
+          </RecipePopup>
         </div>
-        
-        <IngredientTable
-          ingredients={ingredients}
-          setIngredients={setIngredients}
-          isEditable={true}
-        />
-        
+
         <div className="h-screen w-full pt-4 pb-4">
           <SettingsProvider>
             <PlateEditor editor={editor} />
           </SettingsProvider>
         </div>
-        
+
         <div className="flex w-80 justify-self-center pb-6">
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}

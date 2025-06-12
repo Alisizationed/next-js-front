@@ -12,14 +12,19 @@ import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
 import LoadingElement from "@/components/ui/loading-circle";
 import { RecommendationSection } from "@/components/ui/recommendation-section";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
+  const { data: session } = useSession();
+  const router = useRouter();
   const { data, isLoading, isError } = useGetRecipe({
     pathParams: { id: resolvedParams.id },
   });
 
-  if (isLoading) return <LoadingElement/>;
+  if (isLoading) return <LoadingElement />;
   if (isError) return <>Error</>;
 
   const editor = createSlateEditor({
@@ -48,11 +53,23 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
           className="h-full w-full object-cover"
         />
       </div>
-      <IngredientTable ingredients={data?.ingredients} isEditable={false}/>
+      {session && session?.user.keycloakId === data?.keycloakId && (
+        <Button
+          onClick={() =>
+            router.push(`/user/${data?.keycloakId}/recipe/${data?.id}`)
+          }
+        >
+          Update
+        </Button>
+      )}
+      <IngredientTable ingredients={data?.ingredients} isEditable={false} />
       <div>{data?.description}</div>
       <Tags tags={data?.tags} isEditable={false} />
       <PlateStatic editor={editor} components={staticComponents} />
-      <RecommendationSection title={"Recommended for you"} recipeId={data?.id}/>
+      <RecommendationSection
+        title={"Recommended for you"}
+        recipeId={data?.id}
+      />
     </div>
   );
 };
