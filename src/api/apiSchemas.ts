@@ -47,3 +47,56 @@ export type ShortRecipeDTO = {
   image?: string;
   title?: string;
 };
+
+export type PageImpl = {
+  content?: Record<string, any>[];
+  pageable?: PageableObject;
+  last?: boolean;
+  /**
+   * @format int32
+   */
+  totalPages?: number;
+  /**
+   * @format int64
+   */
+  totalElements?: number;
+  /**
+   * @format int32
+   */
+  size?: number;
+  /**
+   * @format int32
+   */
+  number?: number;
+  sort?: SortObject;
+  first?: boolean;
+  /**
+   * @format int32
+   */
+  numberOfElements?: number;
+  empty?: boolean;
+};
+
+export type PageableObject = {
+  /**
+   * @format int64
+   */
+  offset?: number;
+  sort?: SortObject;
+  unpaged?: boolean;
+  paged?: boolean;
+  /**
+   * @format int32
+   */
+  pageNumber?: number;
+  /**
+   * @format int32
+   */
+  pageSize?: number;
+};
+
+export type SortObject = {
+  empty?: boolean;
+  sorted?: boolean;
+  unsorted?: boolean;
+};

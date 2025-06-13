@@ -209,6 +209,123 @@ export const useGetUserById = <TData = Schemas.UserPublicRepresentationDTO,>(
   });
 };
 
+export type GetAllUsersPageableQueryParams = {
+  /**
+   * @format int32
+   */
+  offset: number;
+  /**
+   * @format int32
+   */
+  limit: number;
+};
+
+export type GetAllUsersPageableError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetAllUsersPageableResponse = Schemas.UserListRepresentationDTO[];
+
+export type GetAllUsersPageableVariables = {
+  queryParams: GetAllUsersPageableQueryParams;
+} & Api1Context["fetcherOptions"];
+
+export const fetchGetAllUsersPageable = (
+  variables: GetAllUsersPageableVariables,
+  signal?: AbortSignal,
+) =>
+  api1Fetch<
+    GetAllUsersPageableResponse,
+    GetAllUsersPageableError,
+    undefined,
+    {},
+    GetAllUsersPageableQueryParams,
+    {}
+  >({ url: "/api/users/page", method: "get", ...variables, signal });
+
+export function getAllUsersPageableQuery(
+  variables: GetAllUsersPageableVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetAllUsersPageableResponse>;
+};
+
+export function getAllUsersPageableQuery(
+  variables: GetAllUsersPageableVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetAllUsersPageableResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getAllUsersPageableQuery(
+  variables: GetAllUsersPageableVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/users/page",
+      operationId: "getAllUsersPageable",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetAllUsersPageable(variables, signal),
+  };
+}
+
+export const useSuspenseGetAllUsersPageable = <
+  TData = GetAllUsersPageableResponse,
+>(
+  variables: GetAllUsersPageableVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetAllUsersPageableResponse,
+      GetAllUsersPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useSuspenseQuery<
+    GetAllUsersPageableResponse,
+    GetAllUsersPageableError,
+    TData
+  >({
+    ...getAllUsersPageableQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetAllUsersPageable = <TData = GetAllUsersPageableResponse,>(
+  variables: GetAllUsersPageableVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetAllUsersPageableResponse,
+      GetAllUsersPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useQuery<
+    GetAllUsersPageableResponse,
+    GetAllUsersPageableError,
+    TData
+  >({
+    ...getAllUsersPageableQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetKeycloakIdByEmailPathParams = {
   email: string;
 };
@@ -299,6 +416,85 @@ export const useGetKeycloakIdByEmail = <TData = string,>(
   });
 };
 
+export type GetUserCountError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetUserCountVariables = Api1Context["fetcherOptions"];
+
+export const fetchGetUserCount = (
+  variables: GetUserCountVariables,
+  signal?: AbortSignal,
+) =>
+  api1Fetch<number, GetUserCountError, undefined, {}, {}, {}>({
+    url: "/api/users/count",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getUserCountQuery(variables: GetUserCountVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<number>;
+};
+
+export function getUserCountQuery(
+  variables: GetUserCountVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<number>)
+    | reactQuery.SkipToken;
+};
+
+export function getUserCountQuery(
+  variables: GetUserCountVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/users/count",
+      operationId: "getUserCount",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchGetUserCount(variables, signal),
+  };
+}
+
+export const useSuspenseGetUserCount = <TData = number,>(
+  variables: GetUserCountVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<number, GetUserCountError, TData>,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useSuspenseQuery<number, GetUserCountError, TData>({
+    ...getUserCountQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetUserCount = <TData = number,>(
+  variables: GetUserCountVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<number, GetUserCountError, TData>,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useQuery<number, GetUserCountError, TData>({
+    ...getUserCountQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/api/users";
@@ -311,7 +507,17 @@ export type QueryOperation =
       variables: GetUserByIdVariables | reactQuery.SkipToken;
     }
   | {
+      path: "/api/users/page";
+      operationId: "getAllUsersPageable";
+      variables: GetAllUsersPageableVariables | reactQuery.SkipToken;
+    }
+  | {
       path: "/api/users/email/{email}";
       operationId: "getKeycloakIdByEmail";
       variables: GetKeycloakIdByEmailVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/users/count";
+      operationId: "getUserCount";
+      variables: GetUserCountVariables | reactQuery.SkipToken;
     };

@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 import { Providers } from "./providers";
 import CustomNavbar from "@/components/CustomNavbar";
 import Footer from "@/components/ui/footer";
+import Wrapper from "@/components/Wrapper";
 
 export const metadata: Metadata = {
   title: "Recipe App",
@@ -20,17 +21,15 @@ const geist = Geist({
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-
-
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <Providers>
-          <>
-            <CustomNavbar/>
+          <Wrapper>
+            <CustomNavbar />
             {children}
-            <Footer/>
-          </>
+            <Footer />
+          </Wrapper>
         </Providers>
       </body>
     </html>

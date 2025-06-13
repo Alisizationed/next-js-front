@@ -733,6 +733,119 @@ export const useGetAllRecipesPageable = <
   });
 };
 
+export type GetAllRecipesPageableV2QueryParams = {
+  /**
+   * @format int32
+   */
+  page: number;
+  /**
+   * @format int32
+   */
+  size: number;
+};
+
+export type GetAllRecipesPageableV2Error = Fetcher.ErrorWrapper<undefined>;
+
+export type GetAllRecipesPageableV2Variables = {
+  queryParams: GetAllRecipesPageableV2QueryParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetAllRecipesPageableV2 = (
+  variables: GetAllRecipesPageableV2Variables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    Schemas.PageImpl,
+    GetAllRecipesPageableV2Error,
+    undefined,
+    {},
+    GetAllRecipesPageableV2QueryParams,
+    {}
+  >({ url: "/api/recipe/pageable/v2", method: "get", ...variables, signal });
+
+export function getAllRecipesPageableV2Query(
+  variables: GetAllRecipesPageableV2Variables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.PageImpl>;
+};
+
+export function getAllRecipesPageableV2Query(
+  variables: GetAllRecipesPageableV2Variables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<Schemas.PageImpl>)
+    | reactQuery.SkipToken;
+};
+
+export function getAllRecipesPageableV2Query(
+  variables: GetAllRecipesPageableV2Variables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/pageable/v2",
+      operationId: "getAllRecipesPageableV2",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetAllRecipesPageableV2(variables, signal),
+  };
+}
+
+export const useSuspenseGetAllRecipesPageableV2 = <TData = Schemas.PageImpl,>(
+  variables: GetAllRecipesPageableV2Variables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.PageImpl,
+      GetAllRecipesPageableV2Error,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    Schemas.PageImpl,
+    GetAllRecipesPageableV2Error,
+    TData
+  >({
+    ...getAllRecipesPageableV2Query(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetAllRecipesPageableV2 = <TData = Schemas.PageImpl,>(
+  variables: GetAllRecipesPageableV2Variables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.PageImpl,
+      GetAllRecipesPageableV2Error,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.PageImpl,
+    GetAllRecipesPageableV2Error,
+    TData
+  >({
+    ...getAllRecipesPageableV2Query(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetImagePathParams = {
   filename: string;
 };
@@ -1021,6 +1134,11 @@ export type QueryOperation =
       path: "/api/recipe/pageable";
       operationId: "getAllRecipesPageable";
       variables: GetAllRecipesPageableVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/pageable/v2";
+      operationId: "getAllRecipesPageableV2";
+      variables: GetAllRecipesPageableV2Variables | reactQuery.SkipToken;
     }
   | {
       path: "/api/recipe/images/{filename}";

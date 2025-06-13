@@ -28,11 +28,11 @@ const CustomNavbar = () => {
   const navItems = [
     {
       name: "Recipes",
-      link: "/recipe",
+      link: "/recipe/page/1",
     },
     {
       name: "User Profiles",
-      link: "/user",
+      link: "/user/page/1",
     },
   ];
   if (status === "authenticated") {
