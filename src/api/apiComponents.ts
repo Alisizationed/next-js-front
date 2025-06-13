@@ -1027,6 +1027,121 @@ export const useGetImageV2 = <TData = GetImageV2Response,>(
   });
 };
 
+export type GetFavouriteRecipesPathParams = {
+  id: string;
+};
+
+export type GetFavouriteRecipesError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetFavouriteRecipesResponse = Schemas.ShortRecipeDTO[];
+
+export type GetFavouriteRecipesVariables = {
+  pathParams: GetFavouriteRecipesPathParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetFavouriteRecipes = (
+  variables: GetFavouriteRecipesVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetFavouriteRecipesResponse,
+    GetFavouriteRecipesError,
+    undefined,
+    {},
+    {},
+    GetFavouriteRecipesPathParams
+  >({
+    url: "/api/recipe/favourites/{id}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getFavouriteRecipesQuery(
+  variables: GetFavouriteRecipesVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetFavouriteRecipesResponse>;
+};
+
+export function getFavouriteRecipesQuery(
+  variables: GetFavouriteRecipesVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetFavouriteRecipesResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getFavouriteRecipesQuery(
+  variables: GetFavouriteRecipesVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/favourites/{id}",
+      operationId: "getFavouriteRecipes",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetFavouriteRecipes(variables, signal),
+  };
+}
+
+export const useSuspenseGetFavouriteRecipes = <
+  TData = GetFavouriteRecipesResponse,
+>(
+  variables: GetFavouriteRecipesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteRecipesResponse,
+      GetFavouriteRecipesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetFavouriteRecipesResponse,
+    GetFavouriteRecipesError,
+    TData
+  >({
+    ...getFavouriteRecipesQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetFavouriteRecipes = <TData = GetFavouriteRecipesResponse,>(
+  variables: GetFavouriteRecipesVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteRecipesResponse,
+      GetFavouriteRecipesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetFavouriteRecipesResponse,
+    GetFavouriteRecipesError,
+    TData
+  >({
+    ...getFavouriteRecipesQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetAllRecipesCountError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetAllRecipesCountVariables = ApiContext["fetcherOptions"];
@@ -1149,6 +1264,11 @@ export type QueryOperation =
       path: "/api/recipe/images/v2/{filename}";
       operationId: "getImageV2";
       variables: GetImageV2Variables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/favourites/{id}";
+      operationId: "getFavouriteRecipes";
+      variables: GetFavouriteRecipesVariables | reactQuery.SkipToken;
     }
   | {
       path: "/api/recipe/count";

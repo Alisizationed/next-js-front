@@ -1,21 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client";
-import { useGetAllUsersRecipes } from "@/api/apiComponents";
+
+import { useGetUserById } from "@/api-1/api1Components";
+import { useGetFavouriteRecipes } from "@/api/apiComponents";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import LoadingElement from "@/components/ui/loading-circle";
 import UserAvatar from "@/components/ui/user-avatar";
+import Link from "next/link";
 import { use } from "react";
 
-const AccountRecipesPage = ({
+const FavouriteRecipesList = ({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) => {
   const resolvedParams = use(params);
-
-  const { data, isLoading, isError } = useGetAllUsersRecipes({
-    pathParams: { id: resolvedParams.id ?? "" },
+  const { data, isLoading, isError } = useGetFavouriteRecipes({
+    pathParams: { id: resolvedParams.id },
   });
 
   if (!resolvedParams) return <>User not found.</>;
@@ -42,4 +44,4 @@ const AccountRecipesPage = ({
   );
 };
 
-export default AccountRecipesPage;
+export default FavouriteRecipesList;

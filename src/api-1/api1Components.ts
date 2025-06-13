@@ -326,6 +326,120 @@ export const useGetAllUsersPageable = <TData = GetAllUsersPageableResponse,>(
   });
 };
 
+export type GetFavouriteByKeycloakIdPathParams = {
+  id: string;
+};
+
+export type GetFavouriteByKeycloakIdError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetFavouriteByKeycloakIdResponse = number[];
+
+export type GetFavouriteByKeycloakIdVariables = {
+  pathParams: GetFavouriteByKeycloakIdPathParams;
+} & Api1Context["fetcherOptions"];
+
+export const fetchGetFavouriteByKeycloakId = (
+  variables: GetFavouriteByKeycloakIdVariables,
+  signal?: AbortSignal,
+) =>
+  api1Fetch<
+    GetFavouriteByKeycloakIdResponse,
+    GetFavouriteByKeycloakIdError,
+    undefined,
+    {},
+    {},
+    GetFavouriteByKeycloakIdPathParams
+  >({ url: "/api/users/favourite/{id}", method: "get", ...variables, signal });
+
+export function getFavouriteByKeycloakIdQuery(
+  variables: GetFavouriteByKeycloakIdVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (
+    options: QueryFnOptions,
+  ) => Promise<GetFavouriteByKeycloakIdResponse>;
+};
+
+export function getFavouriteByKeycloakIdQuery(
+  variables: GetFavouriteByKeycloakIdVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetFavouriteByKeycloakIdResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getFavouriteByKeycloakIdQuery(
+  variables: GetFavouriteByKeycloakIdVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/users/favourite/{id}",
+      operationId: "getFavouriteByKeycloakId",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetFavouriteByKeycloakId(variables, signal),
+  };
+}
+
+export const useSuspenseGetFavouriteByKeycloakId = <
+  TData = GetFavouriteByKeycloakIdResponse,
+>(
+  variables: GetFavouriteByKeycloakIdVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteByKeycloakIdResponse,
+      GetFavouriteByKeycloakIdError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useSuspenseQuery<
+    GetFavouriteByKeycloakIdResponse,
+    GetFavouriteByKeycloakIdError,
+    TData
+  >({
+    ...getFavouriteByKeycloakIdQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetFavouriteByKeycloakId = <
+  TData = GetFavouriteByKeycloakIdResponse,
+>(
+  variables: GetFavouriteByKeycloakIdVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteByKeycloakIdResponse,
+      GetFavouriteByKeycloakIdError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApi1Context(options);
+  return reactQuery.useQuery<
+    GetFavouriteByKeycloakIdResponse,
+    GetFavouriteByKeycloakIdError,
+    TData
+  >({
+    ...getFavouriteByKeycloakIdQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetKeycloakIdByEmailPathParams = {
   email: string;
 };
@@ -510,6 +624,11 @@ export type QueryOperation =
       path: "/api/users/page";
       operationId: "getAllUsersPageable";
       variables: GetAllUsersPageableVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/users/favourite/{id}";
+      operationId: "getFavouriteByKeycloakId";
+      variables: GetFavouriteByKeycloakIdVariables | reactQuery.SkipToken;
     }
   | {
       path: "/api/users/email/{email}";

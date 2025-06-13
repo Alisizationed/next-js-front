@@ -5,7 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import LoadingElement from "@/components/ui/loading-circle";
+import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
 import { use } from "react";
 
 const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -18,7 +20,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
     pathParams: { id: resolvedParams.id },
   });
 
-
+  const router = useRouter();
 
   if (isError) {
     return (
@@ -31,51 +33,61 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   if (!user) {
-    return (
-      <>
-        <div>No user with such id: {resolvedParams.id}</div>
-      </>
-    );
+    return <div>No user with such id: {resolvedParams.id}</div>;
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-        <motion.div
-          className="mx-auto max-w-3xl"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Card className="rounded-2xl bg-white p-6 shadow-lg">
-            <div className="flex items-center gap-6">
-              <Avatar className="h-24 w-24 border">
-                <AvatarImage src={user.picture} alt={user.username} />
-                <AvatarFallback>
-                  {user.firstName}
-                  {user.lastName}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {user.firstName} {user.lastName}
-                </h2>
-                <p className="text-sm text-gray-600">{user.email}</p>
-                <Badge className="mt-2" variant="secondary">
-                  {user.username}
-                </Badge>
-              </div>
+    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <motion.div
+        className="mx-auto max-w-3xl"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Card className="rounded-2xl bg-white p-6 shadow-lg">
+          <div className="flex items-center gap-6">
+            <Avatar className="h-24 w-24 border">
+              <AvatarImage src={user.picture} alt={user.username} />
+              <AvatarFallback>
+                {user.firstName}
+                {user.lastName}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {user.firstName} {user.lastName}
+              </h2>
+              <p className="text-sm text-gray-600">{user.email}</p>
+              <Badge className="mt-2" variant="secondary">
+                {user.username}
+              </Badge>
             </div>
-            <CardContent className="mt-6">
+          </div>
+          <CardContent className="mt-6 space-y-4">
+            <div>
               <h3 className="text-lg font-semibold text-gray-800">Biography</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-700">
                 {user.bio}
               </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    </>
+            </div>
+            <div className="flex pt-4 gap-4">
+              <Button
+                variant="default"
+                onClick={() => router.push(`/user/${user.id}/recipe`)}
+              >
+                View Recipes
+              </Button>
+              <Button
+                variant="default"
+                onClick={() => router.push(`/user/${user.id}/favourite`)}
+              >
+                View Favourites
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
   );
 };
 
