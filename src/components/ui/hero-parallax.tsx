@@ -111,19 +111,10 @@ export const Header = () => {
       <p className="mt-8 max-w-2xl text-base md:text-xl dark:text-neutral-200">
         We build beautiful products with the latest technologies and frameworks.
         We are a team of passionate developers and designers that love to build
-        amazing products.
+        amazing products and to eat tasty dishes.
       </p>
     </div>
   );
-};
-
-const isTrustedDomain = (url: string): boolean => {
-  try {
-    const { hostname } = new URL(url);
-    return hostname === "localhost";
-  } catch {
-    return false;
-  }
 };
 
 export const ProductCard = ({
