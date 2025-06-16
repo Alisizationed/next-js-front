@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { use } from "react";
 import { useGetRecipe } from "@/api/apiComponents";
 import { staticComponents } from "@/components/editor/static-components";
@@ -15,17 +16,37 @@ import { RecommendationSection } from "@/components/ui/recommendation-section";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
+import { useIsFavourite, useSetIsFavourite } from "@/api-1/api1Components";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const { data, isLoading, isError } = useGetRecipe({
     pathParams: { id: resolvedParams.id },
   });
+  const {
+    data: data1,
+    isLoading: isLoading1,
+    isError: isError1,
+  } = useIsFavourite({
+    pathParams: { id: session?.user.keycloakId, favourite: resolvedParams.id },
+  });
+  const setFavourite = useSetIsFavourite();
 
-  if (isLoading) return <LoadingElement />;
-  if (isError) return <>Error</>;
+  const [isFavourite, setIsFavourite] = useState(false);
+
+  // Update local state when API data loads
+  useEffect(() => {
+    if (data1 !== undefined) {
+      setIsFavourite(data1);
+    }
+  }, [data1]);
+
+  if (isLoading || isLoading1 || status == "loading") return <LoadingElement />;
+  if (isError || isError1) return <>Error</>;
 
   const editor = createSlateEditor({
     value: JSON.parse(data?.contents),
@@ -53,15 +74,43 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
           className="h-full w-full object-cover"
         />
       </div>
-      {session && session?.user.keycloakId === data?.keycloakId && (
-        <Button
-          onClick={() =>
-            router.push(`/user/${data?.keycloakId}/recipe/${data?.id}`)
-          }
+      <div className="flex justify-end gap-4">
+        <Toggle
+          aria-label="Toggle favourite"
+          pressed={isFavourite}
+          onPressedChange={async (pressed: boolean) => {
+            // Update UI optimistically
+            setIsFavourite(pressed);
+            
+            try {
+              await setFavourite.mutateAsync({
+                pathParams: {
+                  id: session?.user.keycloakId,
+                  favourite: resolvedParams.id,
+                },
+                queryParams: { favouriteStatus: pressed },
+              });
+            } catch (error) {
+              // Revert state if API call fails
+              setIsFavourite(!pressed);
+              console.error("Failed to update favourite status:", error);
+            }
+          }}
+          className="text-red-500 cursor-pointer"
         >
-          Update
-        </Button>
-      )}
+          <Heart className="h-4 w-4" />
+        </Toggle>
+
+        {session && session?.user.keycloakId === data?.keycloakId && (
+          <Button
+            onClick={() =>
+              router.push(`/user/${data?.keycloakId}/recipe/${data?.id}`)
+            }
+          >
+            Update
+          </Button>
+        )}
+      </div>
       <IngredientTable ingredients={data?.ingredients} isEditable={false} />
       <div>{data?.description}</div>
       <Tags tags={data?.tags} isEditable={false} />

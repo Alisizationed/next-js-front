@@ -74,12 +74,14 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
               <Button
                 variant="default"
                 onClick={() => router.push(`/user/${user.id}/recipe`)}
+                className="cursor-pointer"
               >
                 View Recipes
               </Button>
               <Button
                 variant="default"
-                onClick={() => router.push(`/user/${user.id}/favourite`)}
+                onClick={() => router.push(`/user/${user.id}/favourite/1`)}
+                className="cursor-pointer"
               >
                 View Favourites
               </Button>

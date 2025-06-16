@@ -1142,6 +1142,139 @@ export const useGetFavouriteRecipes = <TData = GetFavouriteRecipesResponse,>(
   });
 };
 
+export type GetFavouriteRecipesPageablePathParams = {
+  id: string;
+};
+
+export type GetFavouriteRecipesPageableQueryParams = {
+  /**
+   * @format int32
+   */
+  offset: number;
+  /**
+   * @format int32
+   */
+  limit: number;
+};
+
+export type GetFavouriteRecipesPageableError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetFavouriteRecipesPageableResponse = Schemas.ShortRecipeDTO[];
+
+export type GetFavouriteRecipesPageableVariables = {
+  pathParams: GetFavouriteRecipesPageablePathParams;
+  queryParams: GetFavouriteRecipesPageableQueryParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetFavouriteRecipesPageable = (
+  variables: GetFavouriteRecipesPageableVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetFavouriteRecipesPageableResponse,
+    GetFavouriteRecipesPageableError,
+    undefined,
+    {},
+    GetFavouriteRecipesPageableQueryParams,
+    GetFavouriteRecipesPageablePathParams
+  >({
+    url: "/api/recipe/favourites/v2/{id}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getFavouriteRecipesPageableQuery(
+  variables: GetFavouriteRecipesPageableVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (
+    options: QueryFnOptions,
+  ) => Promise<GetFavouriteRecipesPageableResponse>;
+};
+
+export function getFavouriteRecipesPageableQuery(
+  variables: GetFavouriteRecipesPageableVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((
+        options: QueryFnOptions,
+      ) => Promise<GetFavouriteRecipesPageableResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getFavouriteRecipesPageableQuery(
+  variables: GetFavouriteRecipesPageableVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/favourites/v2/{id}",
+      operationId: "getFavouriteRecipesPageable",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetFavouriteRecipesPageable(variables, signal),
+  };
+}
+
+export const useSuspenseGetFavouriteRecipesPageable = <
+  TData = GetFavouriteRecipesPageableResponse,
+>(
+  variables: GetFavouriteRecipesPageableVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteRecipesPageableResponse,
+      GetFavouriteRecipesPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetFavouriteRecipesPageableResponse,
+    GetFavouriteRecipesPageableError,
+    TData
+  >({
+    ...getFavouriteRecipesPageableQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetFavouriteRecipesPageable = <
+  TData = GetFavouriteRecipesPageableResponse,
+>(
+  variables: GetFavouriteRecipesPageableVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetFavouriteRecipesPageableResponse,
+      GetFavouriteRecipesPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetFavouriteRecipesPageableResponse,
+    GetFavouriteRecipesPageableError,
+    TData
+  >({
+    ...getFavouriteRecipesPageableQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type GetAllRecipesCountError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetAllRecipesCountVariables = ApiContext["fetcherOptions"];
@@ -1269,6 +1402,11 @@ export type QueryOperation =
       path: "/api/recipe/favourites/{id}";
       operationId: "getFavouriteRecipes";
       variables: GetFavouriteRecipesVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/favourites/v2/{id}";
+      operationId: "getFavouriteRecipesPageable";
+      variables: GetFavouriteRecipesPageableVariables | reactQuery.SkipToken;
     }
   | {
       path: "/api/recipe/count";

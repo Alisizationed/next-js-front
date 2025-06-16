@@ -1,11 +1,21 @@
-'use client'
-import { useSession } from "next-auth/react";
+"use client";
+
+import { useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import LoadingElement from "./ui/loading-circle";
 
-const Wrapper = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const { status } = useSession();
 
-  if (status === "loading") return <LoadingElement />;
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn();
+    }
+  }, [status]);
+
+  if (status === "loading" || status === "unauthenticated") {
+    return <LoadingElement />;
+  }
 
   return <>{children}</>;
 };
