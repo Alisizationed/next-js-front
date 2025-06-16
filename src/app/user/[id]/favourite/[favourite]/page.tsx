@@ -33,7 +33,7 @@ const FavouriteRecipesList = ({
 
   return (
     <>
-      <UserAvatar id={resolvedParams.id} />
+      <UserAvatar id={resolvedParams.id} section="Favourites" />
       <BentoGrid className="mx-auto max-w-4xl">
         {data?.map((item, i) => (
           <BentoGridItem

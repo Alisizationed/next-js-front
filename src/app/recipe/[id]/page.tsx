@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { useIsFavourite, useSetIsFavourite } from "@/api-1/api1Components";
+import UserAvatarSmall from "@/components/ui/user-avatar-small";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
@@ -38,7 +39,6 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
 
   const [isFavourite, setIsFavourite] = useState(false);
 
-  // Update local state when API data loads
   useEffect(() => {
     if (data1 !== undefined) {
       setIsFavourite(data1);
@@ -110,6 +110,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
             Update
           </Button>
         )}
+        <UserAvatarSmall id={data?.keycloakId}/>
       </div>
       <IngredientTable ingredients={data?.ingredients} isEditable={false} />
       <div>{data?.description}</div>

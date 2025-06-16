@@ -26,7 +26,7 @@ const AccountRecipesPage = ({
 
   return (
     <>
-      <UserAvatar id={resolvedParams.id}/>
+      <UserAvatar id={resolvedParams.id} section="Recipes"/>
       <BentoGrid className="mx-auto max-w-4xl">
         {data?.map((item, i) => (
           <BentoGridItem

@@ -6,7 +6,7 @@ import { useGetUserById } from "@/api-1/api1Components";
 import LoadingElement from "./loading-circle";
 import { Badge } from "./badge";
 
-const UserAvatar = ({id}: {id: string}) => {
+const UserAvatar = ({id, section}: {id: string; section: string}) => {
   const {
     data: user,
     isLoading,
@@ -31,7 +31,7 @@ const UserAvatar = ({id}: {id: string}) => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2>Favourites</h2>
+                <h2>{section}</h2>
                 <Badge className="mt-2" variant="secondary">
                   {user?.username}
                 </Badge>

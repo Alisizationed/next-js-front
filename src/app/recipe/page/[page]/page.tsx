@@ -2,10 +2,7 @@
 "use client";
 
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
-import {
-  useGetAllRecipesCount,
-  useGetAllRecipesPageableV2,
-} from "@/api/apiComponents";
+import { useGetAllRecipesPageableV2 } from "@/api/apiComponents";
 import LoadingElement from "@/components/ui/loading-circle";
 import Pagination from "@/components/ui/pagination";
 import { use } from "react";
@@ -15,21 +12,15 @@ const RecipeList = ({ params }: { params: Promise<{ page: number }> }) => {
   const size = 6;
   const page = resolvedParams.page;
 
-  const {
-    data: data1,
-    isLoading: isLoading1,
-    isError: isError1,
-  } = useGetAllRecipesCount({});
-
   const { data, isLoading, isError } = useGetAllRecipesPageableV2({
     queryParams: { page: page - 1, size: size },
   });
 
-  if (isLoading || isLoading1) return <LoadingElement />;
+  if (isLoading) return <LoadingElement />;
 
-  if (isError || isError1) return <>Error</>;
+  if (isError) return <>Error</>;
 
-  const pageNumber: number = Math.ceil(Number(data1!) / Number(size));
+  const pageNumber = data?.totalPages;
 
   return (
     <>
