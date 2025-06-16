@@ -14,7 +14,7 @@ export const RecommendationSection = ({
   recipeId: number;
 }) => {
   const { data, isLoading, isError } = useGetRecommendedRecipes({
-    pathParams: { id: recipeId, limit: 5 },
+    pathParams: { id: recipeId, size: 5 },
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);

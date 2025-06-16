@@ -20,6 +20,7 @@ import { Heart } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { useIsFavourite, useSetIsFavourite } from "@/api-1/api1Components";
 import UserAvatarSmall from "@/components/ui/user-avatar-small";
+import CommentsSection from "@/components/ui/comments-section";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
@@ -79,9 +80,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
           aria-label="Toggle favourite"
           pressed={isFavourite}
           onPressedChange={async (pressed: boolean) => {
-            // Update UI optimistically
             setIsFavourite(pressed);
-            
             try {
               await setFavourite.mutateAsync({
                 pathParams: {
@@ -91,7 +90,6 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
                 queryParams: { favouriteStatus: pressed },
               });
             } catch (error) {
-              // Revert state if API call fails
               setIsFavourite(!pressed);
               console.error("Failed to update favourite status:", error);
             }
@@ -120,6 +118,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
         title={"Recommended for you"}
         recipeId={data?.id}
       />
+      <CommentsSection recipeId={resolvedParams.id}/>
     </div>
   );
 };

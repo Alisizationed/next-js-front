@@ -248,6 +248,37 @@ export const useSaveImage = (
   });
 };
 
+export type AddCommentError = Fetcher.ErrorWrapper<undefined>;
+
+export type AddCommentVariables = {
+  body?: Schemas.CommentDTO;
+} & ApiContext["fetcherOptions"];
+
+export const fetchAddComment = (
+  variables: AddCommentVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<string, AddCommentError, Schemas.CommentDTO, {}, {}, {}>({
+    url: "/api/recipe/comment/",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useAddComment = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<string, AddCommentError, AddCommentVariables>,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useApiContext();
+  return reactQuery.useMutation<string, AddCommentError, AddCommentVariables>({
+    mutationFn: (variables: AddCommentVariables) =>
+      fetchAddComment(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type GetAllRecipesError = Fetcher.ErrorWrapper<undefined>;
 
 export type GetAllRecipesResponse = Schemas.ShortRecipeDTO[];
@@ -597,11 +628,11 @@ export type GetAllUsersRecipesPageableQueryParams = {
   /**
    * @format int64
    */
-  offset: number;
+  page: number;
   /**
    * @format int64
    */
-  limit: number;
+  size: number;
 };
 
 export type GetAllUsersRecipesPageableError = Fetcher.ErrorWrapper<undefined>;
@@ -723,7 +754,7 @@ export type GetRecommendedRecipesPathParams = {
   /**
    * @format int64
    */
-  limit: number;
+  size: number;
 };
 
 export type GetRecommendedRecipesError = Fetcher.ErrorWrapper<undefined>;
@@ -746,7 +777,7 @@ export const fetchGetRecommendedRecipes = (
     {},
     GetRecommendedRecipesPathParams
   >({
-    url: "/api/recipe/recommended/{id}/{limit}",
+    url: "/api/recipe/recommended/{id}/{size}",
     method: "get",
     ...variables,
     signal,
@@ -773,7 +804,7 @@ export function getRecommendedRecipesQuery(
 ) {
   return {
     queryKey: queryKeyFn({
-      path: "/api/recipe/recommended/{id}/{limit}",
+      path: "/api/recipe/recommended/{id}/{size}",
       operationId: "getRecommendedRecipes",
       variables,
     }),
@@ -1375,11 +1406,11 @@ export type GetFavouriteRecipesPageableQueryParams = {
   /**
    * @format int32
    */
-  offset: number;
+  page: number;
   /**
    * @format int32
    */
-  limit: number;
+  size: number;
 };
 
 export type GetFavouriteRecipesPageableError = Fetcher.ErrorWrapper<undefined>;
@@ -1582,6 +1613,268 @@ export const useGetAllRecipesCount = <TData = number,>(
   });
 };
 
+export type GetCommentsPageablePathParams = {
+  /**
+   * @format int64
+   */
+  recipeId: number;
+};
+
+export type GetCommentsPageableQueryParams = {
+  /**
+   * @format int32
+   */
+  page: number;
+  /**
+   * @format int32
+   */
+  size: number;
+};
+
+export type GetCommentsPageableError = Fetcher.ErrorWrapper<undefined>;
+
+export type GetCommentsPageableResponse = Schemas.CommentDTO[];
+
+export type GetCommentsPageableVariables = {
+  pathParams: GetCommentsPageablePathParams;
+  queryParams: GetCommentsPageableQueryParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetCommentsPageable = (
+  variables: GetCommentsPageableVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetCommentsPageableResponse,
+    GetCommentsPageableError,
+    undefined,
+    {},
+    GetCommentsPageableQueryParams,
+    GetCommentsPageablePathParams
+  >({
+    url: "/api/recipe/comment/{recipeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getCommentsPageableQuery(
+  variables: GetCommentsPageableVariables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetCommentsPageableResponse>;
+};
+
+export function getCommentsPageableQuery(
+  variables: GetCommentsPageableVariables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetCommentsPageableResponse>)
+    | reactQuery.SkipToken;
+};
+
+export function getCommentsPageableQuery(
+  variables: GetCommentsPageableVariables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/comment/{recipeId}",
+      operationId: "getCommentsPageable",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetCommentsPageable(variables, signal),
+  };
+}
+
+export const useSuspenseGetCommentsPageable = <
+  TData = GetCommentsPageableResponse,
+>(
+  variables: GetCommentsPageableVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetCommentsPageableResponse,
+      GetCommentsPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetCommentsPageableResponse,
+    GetCommentsPageableError,
+    TData
+  >({
+    ...getCommentsPageableQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetCommentsPageable = <TData = GetCommentsPageableResponse,>(
+  variables: GetCommentsPageableVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetCommentsPageableResponse,
+      GetCommentsPageableError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetCommentsPageableResponse,
+    GetCommentsPageableError,
+    TData
+  >({
+    ...getCommentsPageableQuery(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type GetCommentsPageableV2PathParams = {
+  /**
+   * @format int64
+   */
+  recipeId: number;
+};
+
+export type GetCommentsPageableV2QueryParams = {
+  /**
+   * @format int32
+   */
+  page: number;
+  /**
+   * @format int32
+   */
+  size: number;
+};
+
+export type GetCommentsPageableV2Error = Fetcher.ErrorWrapper<undefined>;
+
+export type GetCommentsPageableV2Response = Schemas.CommentDTO[];
+
+export type GetCommentsPageableV2Variables = {
+  pathParams: GetCommentsPageableV2PathParams;
+  queryParams: GetCommentsPageableV2QueryParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchGetCommentsPageableV2 = (
+  variables: GetCommentsPageableV2Variables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    GetCommentsPageableV2Response,
+    GetCommentsPageableV2Error,
+    undefined,
+    {},
+    GetCommentsPageableV2QueryParams,
+    GetCommentsPageableV2PathParams
+  >({
+    url: "/api/recipe/comment/v2/{recipeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export function getCommentsPageableV2Query(
+  variables: GetCommentsPageableV2Variables,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetCommentsPageableV2Response>;
+};
+
+export function getCommentsPageableV2Query(
+  variables: GetCommentsPageableV2Variables | reactQuery.SkipToken,
+): {
+  queryKey: reactQuery.QueryKey;
+  queryFn:
+    | ((options: QueryFnOptions) => Promise<GetCommentsPageableV2Response>)
+    | reactQuery.SkipToken;
+};
+
+export function getCommentsPageableV2Query(
+  variables: GetCommentsPageableV2Variables | reactQuery.SkipToken,
+) {
+  return {
+    queryKey: queryKeyFn({
+      path: "/api/recipe/comment/v2/{recipeId}",
+      operationId: "getCommentsPageableV2",
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) =>
+            fetchGetCommentsPageableV2(variables, signal),
+  };
+}
+
+export const useSuspenseGetCommentsPageableV2 = <
+  TData = GetCommentsPageableV2Response,
+>(
+  variables: GetCommentsPageableV2Variables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetCommentsPageableV2Response,
+      GetCommentsPageableV2Error,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useSuspenseQuery<
+    GetCommentsPageableV2Response,
+    GetCommentsPageableV2Error,
+    TData
+  >({
+    ...getCommentsPageableV2Query(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export const useGetCommentsPageableV2 = <
+  TData = GetCommentsPageableV2Response,
+>(
+  variables: GetCommentsPageableV2Variables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetCommentsPageableV2Response,
+      GetCommentsPageableV2Error,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useApiContext(options);
+  return reactQuery.useQuery<
+    GetCommentsPageableV2Response,
+    GetCommentsPageableV2Error,
+    TData
+  >({
+    ...getCommentsPageableV2Query(
+      variables === reactQuery.skipToken
+        ? variables
+        : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/api/recipe/{id}";
@@ -1609,7 +1902,7 @@ export type QueryOperation =
       variables: GetAllUsersRecipesPageableVariables | reactQuery.SkipToken;
     }
   | {
-      path: "/api/recipe/recommended/{id}/{limit}";
+      path: "/api/recipe/recommended/{id}/{size}";
       operationId: "getRecommendedRecipes";
       variables: GetRecommendedRecipesVariables | reactQuery.SkipToken;
     }
@@ -1647,4 +1940,14 @@ export type QueryOperation =
       path: "/api/recipe/count";
       operationId: "getAllRecipesCount";
       variables: GetAllRecipesCountVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/comment/{recipeId}";
+      operationId: "getCommentsPageable";
+      variables: GetCommentsPageableVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: "/api/recipe/comment/v2/{recipeId}";
+      operationId: "getCommentsPageableV2";
+      variables: GetCommentsPageableV2Variables | reactQuery.SkipToken;
     };

@@ -24,7 +24,7 @@ const AccountRecipesPage = ({
 
   const { data, isLoading, isError } = useGetAllUsersRecipesPageable({
     pathParams: { id: resolvedParams.id ?? "" },
-    queryParams: { offset: pageActive * size, limit: size },
+    queryParams: { page: pageActive, size },
   });
 
   if (!resolvedParams) return <>User not found.</>;

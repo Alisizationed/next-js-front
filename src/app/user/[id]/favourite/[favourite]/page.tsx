@@ -17,7 +17,7 @@ const FavouriteRecipesList = ({
   const size = 6;
   const { data, isLoading, isError } = useGetFavouriteRecipesPageable({
     pathParams: { id: resolvedParams.id },
-    queryParams: { offset: (Number(resolvedParams.favourite) - 1)*size, limit: size },
+    queryParams: { page: (Number(resolvedParams.favourite) - 1), size },
   });
   const { data: data1, isLoading: isLoading1, isError: isError1 } = useGetFavouriteCountByKeycloakId({
     pathParams: { id: resolvedParams.id }

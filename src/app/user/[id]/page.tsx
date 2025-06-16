@@ -73,7 +73,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
             <div className="flex pt-4 gap-4">
               <Button
                 variant="default"
-                onClick={() => router.push(`/user/${user.id}/recipe`)}
+                onClick={() => router.push(`/user/${user.id}/recipe/page/1`)}
                 className="cursor-pointer"
               >
                 View Recipes
