@@ -63,6 +63,10 @@ export type PageImpl = {
   /**
    * @format int32
    */
+  numberOfElements?: number;
+  /**
+   * @format int32
+   */
   size?: number;
   /**
    * @format int32
@@ -70,33 +74,29 @@ export type PageImpl = {
   number?: number;
   sort?: SortObject;
   first?: boolean;
-  /**
-   * @format int32
-   */
-  numberOfElements?: number;
   empty?: boolean;
 };
 
 export type PageableObject = {
-  /**
-   * @format int64
-   */
-  offset?: number;
-  sort?: SortObject;
   paged?: boolean;
+  unpaged?: boolean;
+  /**
+   * @format int32
+   */
+  pageNumber?: number;
   /**
    * @format int32
    */
   pageSize?: number;
   /**
-   * @format int32
+   * @format int64
    */
-  pageNumber?: number;
-  unpaged?: boolean;
+  offset?: number;
+  sort?: SortObject;
 };
 
 export type SortObject = {
-  empty?: boolean;
-  unsorted?: boolean;
   sorted?: boolean;
+  unsorted?: boolean;
+  empty?: boolean;
 };

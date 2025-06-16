@@ -13,7 +13,7 @@ const IngredientTable = ({
   isEditable,
 }: {
   ingredients: IngredientDTO[];
-  setIngredients: any;
+  setIngredients?: any;
   isEditable: boolean;
 }) => {
   const handleChange = (

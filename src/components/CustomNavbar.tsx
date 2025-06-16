@@ -38,8 +38,12 @@ const CustomNavbar = () => {
   if (status === "authenticated") {
     navItems.push({
       name: "My Recipes",
-      link: `/user/${session.user.keycloakId}/recipe`,
-    });
+      link: `/user/${session.user.keycloakId}/recipe/page/1`,
+    },{
+      name: "My Favourites",
+      link: `/user/${session.user.keycloakId}/favourite/1`,
+    }
+  );
   }
 
   const fullLogout = async () => {
