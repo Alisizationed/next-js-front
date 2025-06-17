@@ -180,7 +180,7 @@ export const fetchDeleteRecipe = (
   signal?: AbortSignal,
 ) =>
   apiFetch<
-    undefined,
+    string,
     DeleteRecipeError,
     undefined,
     {},
@@ -191,7 +191,7 @@ export const fetchDeleteRecipe = (
 export const useDeleteRecipe = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      string,
       DeleteRecipeError,
       DeleteRecipeVariables
     >,
@@ -200,7 +200,7 @@ export const useDeleteRecipe = (
 ) => {
   const { fetcherOptions } = useApiContext();
   return reactQuery.useMutation<
-    undefined,
+    string,
     DeleteRecipeError,
     DeleteRecipeVariables
   >({

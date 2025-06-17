@@ -3,6 +3,7 @@
 'use client';
 
 import { useSaveProfilePicture } from "@/api/apiComponents";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import LoadingElement from "@/components/ui/loading-circle";

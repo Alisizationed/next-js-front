@@ -149,6 +149,9 @@ const Page = ({
 
   if (isLoading) return <LoadingElement />;
   if (isError) return <div>Error loading recipe</div>;
+  if(session.data!.user.keycloakId != recipe1?.keycloakId) {
+    router.push('/');
+  } else 
 
   return (
     <>

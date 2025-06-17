@@ -21,6 +21,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useIsFavourite, useSetIsFavourite } from "@/api-1/api1Components";
 import UserAvatarSmall from "@/components/ui/user-avatar-small";
 import CommentsSection from "@/components/ui/comments-section";
+import { useDeleteRecipe } from "@/api/apiComponents";
 
 const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const resolvedParams = use(params);
@@ -29,6 +30,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   const { data, isLoading, isError } = useGetRecipe({
     pathParams: { id: resolvedParams.id },
   });
+  const mutation = useDeleteRecipe();
   const {
     data: data1,
     isLoading: isLoading1,
@@ -94,11 +96,22 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
               console.error("Failed to update favourite status:", error);
             }
           }}
-          className="text-red-500 cursor-pointer"
+          className="cursor-pointer text-red-500"
         >
           <Heart className="h-4 w-4" />
         </Toggle>
 
+        {session && session?.user.keycloakId === data?.keycloakId && (
+          <Button
+            onClick={async () => {
+              await mutation.mutateAsync({
+                params: { id: resolvedParams.id },
+              });
+            }}
+          >
+            Delete
+          </Button>
+        )}
         {session && session?.user.keycloakId === data?.keycloakId && (
           <Button
             onClick={() =>
@@ -108,7 +121,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
             Update
           </Button>
         )}
-        <UserAvatarSmall id={data?.keycloakId}/>
+        <UserAvatarSmall id={data?.keycloakId} />
       </div>
       <IngredientTable ingredients={data?.ingredients} isEditable={false} />
       <div>{data?.description}</div>
@@ -118,7 +131,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
         title={"Recommended for you"}
         recipeId={data?.id}
       />
-      <CommentsSection recipeId={resolvedParams.id}/>
+      <CommentsSection recipeId={resolvedParams.id} />
     </div>
   );
 };

@@ -106,16 +106,16 @@ export type PageableObject = {
    */
   offset?: number;
   sort?: SortObject;
-  unpaged?: boolean;
   paged?: boolean;
   /**
    * @format int32
    */
-  pageNumber?: number;
+  pageSize?: number;
   /**
    * @format int32
    */
-  pageSize?: number;
+  pageNumber?: number;
+  unpaged?: boolean;
 };
 
 export type SortObject = {
