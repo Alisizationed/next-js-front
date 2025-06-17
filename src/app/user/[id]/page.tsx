@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
 import { useGetUserById } from "@/api-1/api1Components";
@@ -9,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import { useSession } from "next-auth/react";
 
 const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
   const resolvedParams = use(params);
@@ -19,7 +22,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
   } = useGetUserById({
     pathParams: { id: resolvedParams.id },
   });
-
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   if (isError) {
@@ -70,7 +73,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
                 {user.bio}
               </p>
             </div>
-            <div className="flex pt-4 gap-4">
+            <div className="flex gap-4 pt-4">
               <Button
                 variant="default"
                 onClick={() => router.push(`/user/${user.id}/recipe/page/1`)}
@@ -85,6 +88,30 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
               >
                 View Favourites
               </Button>
+              {session?.user.keycloakId && (
+                <Button
+                  variant="link"
+                  onClick={() => router.push(`/user/${user.id}/picture`)}
+                  className="cursor-pointer"
+                >
+                  Set Profile Picture
+                </Button>
+              )}
+              {session?.user.keycloakId && (
+                <Button
+                  variant="link"
+                  onClick={async () => {
+                    const res = await fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`,
+                      );
+                      const data = await res.json();
+                      router.push(data);
+                  }}
+                  className="cursor-pointer"
+                >
+                  Change Accounts Details
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -82,12 +82,8 @@ const CustomNavbar = () => {
               <>
                 <NavbarButton
                   variant="secondary"
-                  onClick={async () => {
-                    const res = await fetch(
-                      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`,
-                    );
-                    const data = await res.json();
-                    router.push(data);
+                  onClick={() => {
+                      router.push(`/user/${session.user.keycloakId}`);
                   }}
                 >
                   Account
@@ -140,11 +136,7 @@ const CustomNavbar = () => {
                   <NavbarButton
                     onClick={async () => {
                       setIsMobileMenuOpen(false);
-                      const res = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`,
-                      );
-                      const data = await res.json();
-                      router.push(data);
+                      router.push(`/user/${session.user.keycloakId}`);
                     }}
                     variant="primary"
                     className="w-full"

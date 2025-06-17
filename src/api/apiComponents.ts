@@ -210,6 +210,59 @@ export const useDeleteRecipe = (
   });
 };
 
+export type SaveProfilePicturePathParams = {
+  id: string;
+};
+
+export type SaveProfilePictureError = Fetcher.ErrorWrapper<undefined>;
+
+export type SaveProfilePictureRequestBody = {
+  /**
+   * @format binary
+   */
+  image: Blob;
+};
+
+export type SaveProfilePictureVariables = {
+  body: SaveProfilePictureRequestBody;
+  pathParams: SaveProfilePicturePathParams;
+} & ApiContext["fetcherOptions"];
+
+export const fetchSaveProfilePicture = (
+  variables: SaveProfilePictureVariables,
+  signal?: AbortSignal,
+) =>
+  apiFetch<
+    string,
+    SaveProfilePictureError,
+    SaveProfilePictureRequestBody,
+    {},
+    {},
+    SaveProfilePicturePathParams
+  >({ url: "/api/recipe/profile/{id}", method: "post", ...variables, signal });
+
+export const useSaveProfilePicture = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      string,
+      SaveProfilePictureError,
+      SaveProfilePictureVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useApiContext();
+  return reactQuery.useMutation<
+    string,
+    SaveProfilePictureError,
+    SaveProfilePictureVariables
+  >({
+    mutationFn: (variables: SaveProfilePictureVariables) =>
+      fetchSaveProfilePicture(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type SaveImageError = Fetcher.ErrorWrapper<undefined>;
 
 export type SaveImageRequestBody = {
