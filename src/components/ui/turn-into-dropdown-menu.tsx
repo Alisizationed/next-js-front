@@ -139,7 +139,7 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
           tooltip="Turn into"
           isDropdown
         >
-          {selectedItem.label}
+          {selectedItem?.label}
         </ToolbarButton>
       </DropdownMenuTrigger>
 

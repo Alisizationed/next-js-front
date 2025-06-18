@@ -88,7 +88,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
               >
                 View Favourites
               </Button>
-              {session?.user.keycloakId && (
+              {session?.user.keycloakId == resolvedParams.id && (
                 <Button
                   variant="link"
                   onClick={() => router.push(`/user/${user.id}/picture`)}
@@ -97,7 +97,7 @@ const UserProfilePage = ({ params }: { params: Promise<{ id: string }> }) => {
                   Set Profile Picture
                 </Button>
               )}
-              {session?.user.keycloakId && (
+              {session?.user.keycloakId == resolvedParams.id && (
                 <Button
                   variant="link"
                   onClick={async () => {

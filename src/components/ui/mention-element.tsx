@@ -34,9 +34,9 @@ export function MentionElement(
         'inline-block rounded-md bg-muted px-1.5 py-0.5 align-baseline text-sm font-medium',
         !readOnly && 'cursor-pointer',
         selected && focused && 'ring-2 ring-ring',
-        element.children[0].bold === true && 'font-bold',
-        element.children[0].italic === true && 'italic',
-        element.children[0].underline === true && 'underline'
+        element.children[0]?.bold === true && 'font-bold',
+        element.children[0]?.italic === true && 'italic',
+        element.children[0]?.underline === true && 'underline'
       )}
       attributes={{
         ...props.attributes,

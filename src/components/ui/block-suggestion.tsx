@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client';
 
 import * as React from 'react';
@@ -360,7 +363,7 @@ export const useResolveSuggestion = (
           at: [],
           mode: 'all',
           match: (n) =>
-            (n[SuggestionPlugin.key] && n[getSuggestionKey(id)]) ||
+            (n[SuggestionPlugin.key] && n[getSuggestionKey(id)]) ??
             api.suggestion.nodeId(n as TElement) === id,
         }),
       ];
@@ -421,24 +424,24 @@ export const useResolveSuggestion = (
           if (lineBreakData.type === 'insert') {
             newText += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + (TYPE_TEXT_MAP[node.type]?.(node) ?? '');
           } else if (lineBreakData.type === 'remove') {
             text += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node);
+              : BLOCK_SUGGESTION + (TYPE_TEXT_MAP[node.type]?.(node) ?? '');
           }
         }
       });
 
       if (entries.length === 0) return;
 
-      const nodeData = api.suggestion.suggestionData(entries[0][0]);
+      const nodeData = api.suggestion.suggestionData(entries[0]![0]);
 
       if (!nodeData) return;
 
       // const comments = data?.discussions.find((d) => d.id === id)?.comments;
       const comments =
-        discussions.find((s: TDiscussion) => s.id === id)?.comments || [];
+        discussions.find((s: TDiscussion) => s.id === id)?.comments ?? [];
       const createdAt = new Date(nodeData.createdAt);
 
       const keyId = getSuggestionKey(id);

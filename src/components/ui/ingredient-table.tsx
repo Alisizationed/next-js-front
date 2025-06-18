@@ -22,13 +22,19 @@ const IngredientTable = ({
     value: string,
   ) => {
     const updated = [...ingredients];
-    updated[index][field] = value;
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
     setIngredients(updated);
   };
 
   const addRow = (e: any) => {
     e.preventDefault();
-    setIngredients([...ingredients, { ingredient: "", amount: "", measure: "" }]);
+    setIngredients([
+      ...ingredients,
+      { ingredient: "", amount: "", measure: "" },
+    ]);
   };
 
   const removeRow = (e: any, index: number) => {
@@ -40,7 +46,7 @@ const IngredientTable = ({
   if (isEditable)
     return (
       <div className="mx-auto max-w-3xl p-4">
-        <h2 className="mb-4 text-xl text-center font-semibold">Ingredients</h2>
+        <h2 className="mb-4 text-center text-xl font-semibold">Ingredients</h2>
         <table className="w-full border border-gray-300 text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -87,7 +93,7 @@ const IngredientTable = ({
                   />
                 </td>
                 <td className="border p-2 text-center">
-                  <Button onClick={(e) => removeRow(e,index)}>✕</Button>
+                  <Button onClick={(e) => removeRow(e, index)}>✕</Button>
                 </td>
               </tr>
             ))}
@@ -100,7 +106,7 @@ const IngredientTable = ({
 
   return (
     <div className="mx-auto max-w-3xl p-4">
-      <h2 className="mb-4 text-xl text-center font-semibold">Ingredients</h2>
+      <h2 className="mb-4 text-center text-xl font-semibold">Ingredients</h2>
       <table className="w-full border border-gray-300 text-sm">
         <thead className="bg-gray-100">
           <tr>

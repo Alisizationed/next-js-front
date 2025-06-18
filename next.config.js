@@ -4,6 +4,7 @@ import './src/env.js';
 
 /** @type {import('next').NextConfig} */
 const config = {
+  output: 'standalone', // Required for Docker deployment
   images: {
     domains: ['localhost'],
   },
@@ -13,6 +14,7 @@ const config = {
       alias: {
         ...(webpackConfig.resolve?.alias || {}),
         jotai: path.resolve(process.cwd(), 'node_modules/jotai'),
+        '@': path.resolve(process.cwd(), 'src'),
       },
     };
     return webpackConfig;

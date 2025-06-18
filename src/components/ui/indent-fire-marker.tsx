@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from 'react';
 
 import type { SlateRenderElementProps } from '@udecode/plate';

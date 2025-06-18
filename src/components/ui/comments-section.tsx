@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingElement from "./loading-circle";
 import { useGetCommentsPageableV2 } from "@/api/apiComponents";
 import Comment from "./comment-user";

@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import type { TPlaceholderElement } from '@udecode/plate-media';
-import type { PlateElementProps } from '@udecode/plate/react';
+import type { TPlaceholderElement } from "@udecode/plate-media";
+import type { PlateElementProps } from "@udecode/plate/react";
 
 import {
   AudioPlugin,
@@ -14,13 +18,13 @@ import {
   PlaceholderProvider,
   updateUploadHistory,
   VideoPlugin,
-} from '@udecode/plate-media/react';
-import { PlateElement, useEditorPlugin, withHOC } from '@udecode/plate/react';
-import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from 'lucide-react';
-import { useFilePicker } from 'use-file-picker';
+} from "@udecode/plate-media/react";
+import { PlateElement, useEditorPlugin, withHOC } from "@udecode/plate/react";
+import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from "lucide-react";
+import { useFilePicker } from "use-file-picker";
 
-import { cn } from '@/lib/utils';
-import { useUploadFile } from '@/hooks/use-upload-file';
+import { cn } from "@/lib/utils";
+import { useUploadFile } from "@/hooks/use-upload-file";
 
 const CONTENT: Record<
   string,
@@ -31,23 +35,23 @@ const CONTENT: Record<
   }
 > = {
   [AudioPlugin.key]: {
-    accept: ['audio/*'],
-    content: 'Add an audio file',
+    accept: ["audio/*"],
+    content: "Add an audio file",
     icon: <AudioLines />,
   },
   [FilePlugin.key]: {
-    accept: ['*'],
-    content: 'Add a file',
+    accept: ["*"],
+    content: "Add a file",
     icon: <FileUp />,
   },
   [ImagePlugin.key]: {
-    accept: ['image/*'],
-    content: 'Add an image',
+    accept: ["image/*"],
+    content: "Add an image",
     icon: <ImageIcon />,
   },
   [VideoPlugin.key]: {
-    accept: ['video/*'],
-    content: 'Add a video',
+    accept: ["video/*"],
+    content: "Add a video",
     icon: <Film />,
   },
 };
@@ -55,7 +59,7 @@ const CONTENT: Record<
 export const MediaPlaceholderElement = withHOC(
   PlaceholderProvider,
   function MediaPlaceholderElement(
-    props: PlateElementProps<TPlaceholderElement>
+    props: PlateElementProps<TPlaceholderElement>,
   ) {
     const { editor, element } = props;
 
@@ -73,9 +77,9 @@ export const MediaPlaceholderElement = withHOC(
     const imageRef = React.useRef<HTMLImageElement>(null);
 
     const { openFilePicker } = useFilePicker({
-      accept: currentContent.accept,
+      accept: currentContent?.accept,
       multiple: true,
-      onFilesSelected: ({ plainFiles: updatedFiles }) => {
+      onFilesSelected: ({ plainFiles: updatedFiles }: any) => {
         const firstFile = updatedFiles[0];
         const restFiles = updatedFiles.slice(1);
 
@@ -92,7 +96,7 @@ export const MediaPlaceholderElement = withHOC(
         void uploadFile(file);
         api.placeholder.addUploadingFile(element.id as string, file);
       },
-      [api.placeholder, element.id, uploadFile]
+      [api.placeholder, element.id, uploadFile],
     );
 
     React.useEffect(() => {
@@ -104,13 +108,13 @@ export const MediaPlaceholderElement = withHOC(
         editor.tf.removeNodes({ at: path });
 
         const node = {
-          children: [{ text: '' }],
+          children: [{ text: "" }],
           initialHeight: imageRef.current?.height,
           initialWidth: imageRef.current?.width,
           isUpload: true,
-          name: element.mediaType === FilePlugin.key ? uploadedFile.name : '',
+          name: element.mediaType === FilePlugin.key ? uploadedFile.name : "",
           placeholderId: element.id as string,
-          type: element.mediaType!,
+          type: element.mediaType,
           url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${uploadedFile.url}`,
         };
 
@@ -132,7 +136,7 @@ export const MediaPlaceholderElement = withHOC(
 
       isReplaced.current = true;
       const currentFiles = api.placeholder.getUploadingFile(
-        element.id as string
+        element.id as string,
       );
 
       if (!currentFiles) return;
@@ -147,17 +151,17 @@ export const MediaPlaceholderElement = withHOC(
         {(!loading || !isImage) && (
           <div
             className={cn(
-              'flex cursor-pointer items-center rounded-sm bg-muted p-3 pr-9 select-none hover:bg-primary/10'
+              "bg-muted hover:bg-primary/10 flex cursor-pointer items-center rounded-sm p-3 pr-9 select-none",
             )}
             onClick={() => !loading && openFilePicker()}
             contentEditable={false}
           >
-            <div className="relative mr-3 flex text-muted-foreground/80 [&_svg]:size-6">
-              {currentContent.icon}
+            <div className="text-muted-foreground/80 relative mr-3 flex [&_svg]:size-6">
+              {currentContent?.icon}
             </div>
-            <div className="text-sm whitespace-nowrap text-muted-foreground">
+            <div className="text-muted-foreground text-sm whitespace-nowrap">
               <div>
-                {loading ? uploadingFile?.name : currentContent.content}
+                {loading ? uploadingFile?.name : currentContent?.content}
               </div>
 
               {loading && !isImage && (
@@ -165,7 +169,7 @@ export const MediaPlaceholderElement = withHOC(
                   <div>{formatBytes(uploadingFile?.size ?? 0)}</div>
                   <div>–</div>
                   <div className="flex items-center">
-                    <Loader2Icon className="mr-1 size-3.5 animate-spin text-muted-foreground" />
+                    <Loader2Icon className="text-muted-foreground mr-1 size-3.5 animate-spin" />
                     {progress ?? 0}%
                   </div>
                 </div>
@@ -185,7 +189,7 @@ export const MediaPlaceholderElement = withHOC(
         {props.children}
       </PlateElement>
     );
-  }
+  },
 );
 
 export function ImageProgress({
@@ -215,7 +219,7 @@ export function ImageProgress({
   }
 
   return (
-    <div className={cn('relative', className)} contentEditable={false}>
+    <div className={cn("relative", className)} contentEditable={false}>
       <img
         ref={imageRef}
         className="h-auto w-full rounded-sm object-cover"
@@ -224,7 +228,7 @@ export function ImageProgress({
       />
       {progress < 100 && (
         <div className="absolute right-1 bottom-1 flex items-center space-x-2 rounded-full bg-black/50 px-1 py-0.5">
-          <Loader2Icon className="size-3.5 animate-spin text-muted-foreground" />
+          <Loader2Icon className="text-muted-foreground size-3.5 animate-spin" />
           <span className="text-xs font-medium text-white">
             {Math.round(progress)}%
           </span>
@@ -238,21 +242,21 @@ export function formatBytes(
   bytes: number,
   opts: {
     decimals?: number;
-    sizeType?: 'accurate' | 'normal';
-  } = {}
+    sizeType?: "accurate" | "normal";
+  } = {},
 ) {
-  const { decimals = 0, sizeType = 'normal' } = opts;
+  const { decimals = 0, sizeType = "normal" } = opts;
 
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const accurateSizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"];
 
-  if (bytes === 0) return '0 Byte';
+  if (bytes === 0) return "0 Byte";
 
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
-    sizeType === 'accurate'
-      ? (accurateSizes[i] ?? 'Bytest')
-      : (sizes[i] ?? 'Bytes')
+    sizeType === "accurate"
+      ? (accurateSizes[i] ?? "Bytest")
+      : (sizes[i] ?? "Bytes")
   }`;
 }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import * as React from 'react';
@@ -40,7 +42,7 @@ const Button = React.memo(
         onClick={() => onSelect(emoji)}
         onMouseEnter={() => onMouseOver(emoji)}
         onMouseLeave={() => onMouseOver()}
-        aria-label={emoji.skins[0].native}
+        aria-label={emoji.skins[0]!.native}
         data-index={index}
         tabIndex={-1}
         type="button"
@@ -57,7 +59,7 @@ const Button = React.memo(
           }}
           data-emoji-set="native"
         >
-          {emoji.skins[0].native}
+          {emoji.skins[0]!.native}
         </span>
       </button>
     );

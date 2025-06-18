@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 
 import type { SlateElementProps } from '@udecode/plate';
@@ -27,7 +29,7 @@ export function CalloutElementStatic({
           }}
         >
           <span data-plate-prevent-deserialization>
-            {(props.element.icon as any) || '💡'}
+            {(props.element.icon as any) ?? '💡'}
           </span>
         </div>
         <div className="w-full">{children}</div>

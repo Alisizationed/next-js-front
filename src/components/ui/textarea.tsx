@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from "react";
 import { cn } from "@/lib/utils";
@@ -13,7 +10,10 @@ import type { FieldApi } from "@tanstack/react-form";
 
 type TextAreaProps = {
   label?: string;
-  field: FieldApi<any, any>;
+  field: FieldApi<
+    any, any, any, any, any, any, any, any, any, any,
+    any, any, any, any, any, any, any, any, any
+  >;
   rows?: number;
 };
 

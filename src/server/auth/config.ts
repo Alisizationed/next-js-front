@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -61,7 +62,7 @@ export const authConfig = {
       }
 
       // If token is still valid, return it
-      if (Date.now() < (token?.expires_at ?? 0) * 1000) {
+      if (Date.now() < (token?.expires_at as any ?? 0) * 1000) {
         return token;
       }
 
@@ -84,7 +85,7 @@ export const authConfig = {
               client_id: process.env.AUTH_KEYCLOAK_ID!,
               client_secret: process.env.AUTH_KEYCLOAK_SECRET!,
               grant_type: "refresh_token",
-              refresh_token: token.refresh_token,
+              refresh_token: token.refresh_token as any,
             }),
           },
         );
@@ -113,7 +114,7 @@ export const authConfig = {
 
     session({ session, token }) {
       const keycloakId = JSON.parse(
-        Buffer.from(token.id_token.split(".")[1], "base64").toString(),
+        Buffer.from((token.id_token as any).split(".")[1], "base64").toString(),
       ).sub;
       return {
         ...session,
@@ -128,7 +129,7 @@ export const authConfig = {
     },
   },
   events: {
-    async signOut({ token }) {
+    async signOut({ token } : any) {
       if (token?.refreshToken) {
         try {
           const issuerUrl = process.env.AUTH_KEYCLOAK_ISSUER;

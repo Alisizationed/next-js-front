@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-includes */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
                 return;
               }
 
-              const content: string = json.response || '';
+              const content: string = json.response ?? '';
 
               let innerBuffer = content;
               let chunk;

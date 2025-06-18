@@ -1,9 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
@@ -22,7 +18,7 @@ import { TextArea } from "@/components/ui/textarea";
 import { use, useState, useEffect } from "react";
 import Tags from "@/components/ui/tag";
 import IngredientTable from "@/components/ui/ingredient-table";
-import type { IngredientDTO } from "@/api/apiSchemas";
+import type { IngredientDTO, Tag } from "@/api/apiSchemas";
 import { useSession } from "next-auth/react";
 import LoadingElement from "@/components/ui/loading-circle";
 import RecipePopup from "@/components/ui/recipe-popup";
@@ -43,14 +39,14 @@ const { useAppForm } = createFormHook({
 const Page = ({
   params,
 }: {
-  params: Promise<{ id: string; recipe: number }>;
+  params: Promise<{ id: number }>;
 }) => {
   const resolvedParams = use(params);
   const router = useRouter();
   const session = useSession();
   const mutation = useUpdateRecipe();
   const editor = useCreateEditor();
-  const [tags, setTags] = useState<{ id: number; tag: string }[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [ingredients, setIngredients] = useState<IngredientDTO[]>([]);
   const [file, setFile] = useState<string | Blob | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -60,7 +56,7 @@ const Page = ({
     isLoading,
     isError,
   } = useGetRecipe({
-    pathParams: { id: resolvedParams.recipe },
+    pathParams: { id: resolvedParams.id },
   });
 
   const form = useAppForm({
@@ -93,10 +89,10 @@ const Page = ({
       await mutation.mutateAsync({
         body: formData as any,
         pathParams: {
-          id: resolvedParams.recipe,
+          id: resolvedParams.id,
         },
       });
-      router.push(`/recipe/${resolvedParams.recipe}`);
+      router.push(`/recipe/${resolvedParams.id}`);
     },
     validators: {
       onChange: ({ value }) => {

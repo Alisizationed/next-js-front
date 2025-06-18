@@ -1,23 +1,62 @@
+# Use multi-platform builds instead of hardcoded platform
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
 
-FROM nginx:1.17.1-alpine
+# Copy lockfiles and install deps based on package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
-# Copy the built application from the builder stage
-COPY ./dist /usr/share/nginx/html
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && pnpm install --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Copy the custom Nginx configuration file
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+##### BUILDER
 
-COPY ./entrypoint.sh /usr/share/nginx/entrypoint.sh
+FROM node:20-alpine AS builder
+WORKDIR /app
 
+# Accept environment variables at build-time
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_CLIENTVAR
 
-# Make the entrypoint script executable
-RUN chmod +x /usr/share/nginx/entrypoint.sh
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-# Set the entrypoint script
-ENTRYPOINT ["/usr/share/nginx/entrypoint.sh"]
+# Disable Next.js telemetry during build
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Expose port 80
-EXPOSE 80
+# Build based on the detected package manager
+RUN \
+  if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
+  elif [ -f package-lock.json ]; then SKIP_ENV_VALIDATION=1 npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Run Nginx
-CMD ["nginx", "-g", "daemon off;"]
+##### RUNNER
+
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create a non-root user (distroless images run as root by default)
+# Note: distroless doesn't have useradd, so we'll rely on the default user
+
+# Copy only necessary files for production
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+# Check if standalone output exists, if not fall back to regular build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+ENV PORT=3000
+
+CMD ["server.js"]

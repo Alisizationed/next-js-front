@@ -36,7 +36,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
     isLoading: isLoading1,
     isError: isError1,
   } = useIsFavourite({
-    pathParams: { id: session?.user.keycloakId, favourite: resolvedParams.id },
+    pathParams: { id: session?.user.keycloakId ?? "", favourite: resolvedParams.id },
   });
   const setFavourite = useSetIsFavourite();
 
@@ -52,7 +52,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
   if (isError || isError1) return <>Error</>;
 
   const editor = createSlateEditor({
-    value: JSON.parse(data?.contents),
+    value: JSON.parse(data?.contents ?? ""),
     plugins: staticPlugins,
   });
 
@@ -86,7 +86,7 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
             try {
               await setFavourite.mutateAsync({
                 pathParams: {
-                  id: session?.user.keycloakId,
+                  id: session?.user.keycloakId ?? "",
                   favourite: resolvedParams.id,
                 },
                 queryParams: { favouriteStatus: pressed },
@@ -105,9 +105,11 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
           <Button
             onClick={async () => {
               await mutation.mutateAsync({
-                params: { id: resolvedParams.id },
+                pathParams: { id: resolvedParams.id },
               });
+              router.push("/recipe/page/1");
             }}
+            className="cursor-pointer"
           >
             Delete
           </Button>
@@ -115,21 +117,22 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
         {session && session?.user.keycloakId === data?.keycloakId && (
           <Button
             onClick={() =>
-              router.push(`/user/${data?.keycloakId}/recipe/${data?.id}`)
+              router.push(`/recipe/${data?.id}/update`)
             }
+            className="cursor-pointer"
           >
             Update
           </Button>
         )}
-        <UserAvatarSmall id={data?.keycloakId} />
+        <UserAvatarSmall id={data?.keycloakId ?? ""} />
       </div>
-      <IngredientTable ingredients={data?.ingredients} isEditable={false} />
+      <IngredientTable ingredients={data?.ingredients ?? []} isEditable={false} />
       <div>{data?.description}</div>
-      <Tags tags={data?.tags} isEditable={false} />
+      <Tags tags={data?.tags ?? []} isEditable={false} />
       <PlateStatic editor={editor} components={staticComponents} />
       <RecommendationSection
         title={"Recommended for you"}
-        recipeId={data?.id}
+        recipeId={data?.id ?? 0}
       />
       <CommentsSection recipeId={resolvedParams.id} />
     </div>

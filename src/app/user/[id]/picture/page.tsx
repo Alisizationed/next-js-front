@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-'use client';
+"use client";
 
 import { useSaveProfilePicture } from "@/api/apiComponents";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import LoadingElement from "@/components/ui/loading-circle";
@@ -21,22 +20,24 @@ const AddProfilePicture = () => {
   const mutation = useSaveProfilePicture();
 
   const setProfilePicture = () => {
-      const formData = new FormData();
-      if (file) {
-        formData.append("image", file);
-      }
+    const formData = new FormData();
+    if (file) {
+      formData.append("image", file);
+    }
     mutation.mutate({
-      pathParams: { id: session?.user.keycloakId },
+      pathParams: { id: session?.user.keycloakId ?? "" },
       body: formData as any,
     });
     router.push(`/user/${session?.user.keycloakId}`);
   };
-  if (status == 'loading') return <LoadingElement />;
-  if (status == 'unauthenticated') return <>Error</>;
+  if (status == "loading") return <LoadingElement />;
+  if (status == "unauthenticated") return <>Error</>;
   return (
     <>
       <FileUpload onChange={getFile} />
-      <Button onClick={() => setProfilePicture()}>Set picture</Button>
+      <div className="flex justify-center pt-4">
+        <Button onClick={() => setProfilePicture()}>Set picture</Button>
+      </div>
     </>
   );
 };

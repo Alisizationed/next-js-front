@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useSaveImage } from "@/api/apiComponents";
 
-export type UploadedFile<T = unknown> = {
+export type UploadedFile = {
   key: string;
   appUrl: string;
   name: string;

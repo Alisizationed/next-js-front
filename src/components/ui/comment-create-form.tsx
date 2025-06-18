@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import * as React from 'react';
@@ -239,10 +240,10 @@ export function CommentCreateForm({
             <Editor
               variant="comment"
               className="min-h-[25px] grow pt-0.5 pr-8"
-              onKeyDown={(e) => {
+              onKeyDown={async(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  onAddComment();
+                  await onAddComment();
                 }
               }}
               placeholder="Reply..."
@@ -255,9 +256,9 @@ export function CommentCreateForm({
               variant="ghost"
               className="absolute right-0.5 bottom-0.5 ml-auto shrink-0"
               disabled={commentContent.trim().length === 0}
-              onClick={(e) => {
+              onClick={async(e) => {
                 e.stopPropagation();
-                onAddComment();
+                await onAddComment();
               }}
             >
               <div className="flex size-6 items-center justify-center rounded-full">

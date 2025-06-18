@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import * as React from 'react';
 
 import type { SlateElementProps } from '@udecode/plate';
@@ -23,7 +25,7 @@ export function MediaVideoElementStatic(
             src={url}
             controls
           />
-          {caption && <figcaption>{NodeApi.string(caption[0])}</figcaption>}
+          {caption && <figcaption>{NodeApi.string(caption[0] as any)}</figcaption>}
         </figure>
       </div>
       {props.children}

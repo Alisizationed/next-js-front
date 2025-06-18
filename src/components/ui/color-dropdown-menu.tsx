@@ -46,7 +46,7 @@ export function ColorDropdownMenu({
 
       <DropdownMenuContent align="start">
         <ColorPicker
-          color={state.selectedColor || state.color}
+          color={state.selectedColor ?? state.color}
           clearColor={state.clearColor}
           colors={state.colors}
           customColors={state.customColors}

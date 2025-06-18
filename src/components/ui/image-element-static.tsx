@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/jsx-no-undef */
@@ -66,7 +67,7 @@ export function ImageElementStatic(
 
           {caption && (
             <figcaption className="mx-auto mt-2 h-[24px] max-w-full">
-              {NodeApi.string(caption[0])}
+              {NodeApi.string(caption[0] as any)}
             </figcaption>
           )}
         </div>

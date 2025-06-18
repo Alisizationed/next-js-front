@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -109,24 +110,24 @@ export function SlashInputElement(
   const { openFilePicker: openImagePicker } = useFilePicker({
     accept: ["image/*"],
     multiple: true,
-    onFilesSelected: ({ plainFiles }) => {
-      editorRef.getTransforms(ImagePlugin).insert.media(plainFiles);
+    onFilesSelected: ({ plainFiles }: any) => {
+      editorRef.getTransforms(ImagePlugin).insert.imageFromFiles(plainFiles);
     },
   });
 
   const { openFilePicker: openAudioPicker } = useFilePicker({
     accept: ["audio/*"],
     multiple: true,
-    onFilesSelected: ({ plainFiles }) => {
-      editorRef.getTransforms(AudioPlugin).insert.media(plainFiles);
+    onFilesSelected: ({ plainFiles }: any) => {
+      editorRef.getTransforms(AudioPlugin).insertData(plainFiles);
     },
   });
 
   const { openFilePicker: openVideoPicker } = useFilePicker({
     accept: ["video/*"],
     multiple: true,
-    onFilesSelected: ({ plainFiles }) => {
-      editorRef.getTransforms(VideoPlugin).insert.media(plainFiles);
+    onFilesSelected: ({ plainFiles }: any) => {
+      editorRef.getTransforms(VideoPlugin).insertData(plainFiles);
     },
   });
 

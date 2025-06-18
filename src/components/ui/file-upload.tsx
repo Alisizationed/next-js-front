@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { cn } from "@/lib/utils";
 import React, { useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -32,17 +33,17 @@ export const FileUpload = ({
   };
 
   const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
-    accept: { "image/*": [] },
-    noClick: true,
-    onDrop: (acceptedFiles) => {
-      // only take the first file or null if none
-      handleFileChange(acceptedFiles.length > 0 ? acceptedFiles[0] : null);
-    },
-    onDropRejected: (error) => {
-      console.log(error);
-    },
-  });
+  multiple: false,
+  accept: { "image/*": [] },
+  noClick: true,
+  onDrop: (acceptedFiles) => {
+    // Fix: Check if acceptedFiles has length > 0
+    handleFileChange((acceptedFiles[0] as File) ?? null);
+  },
+  onDropRejected: (error) => {
+    console.log(error);
+  },
+});
 
   return (
     <div className="w-full" {...getRootProps()}>
@@ -57,7 +58,7 @@ export const FileUpload = ({
           type="file"
           accept="image/*"
           onChange={(e) =>
-            handleFileChange(e.target.files && e.target.files[0] ? e.target.files[0] : null)
+            handleFileChange(e.target.files?.[0] ?? null)
           }
           className="hidden"
         />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -101,7 +102,7 @@ export function MediaToolbarButton({
   const { openFilePicker } = useFilePicker({
     accept: currentConfig?.accept,
     multiple: true,
-    onFilesSelected: ({ plainFiles: updatedFiles }) => {
+    onFilesSelected: ({ plainFiles: updatedFiles }: any) => {
       editor.getTransforms(PlaceholderPlugin).insert.media(updatedFiles);
     },
   });
@@ -161,7 +162,7 @@ export function MediaToolbarButton({
       >
         <AlertDialogContent className="gap-6">
           <MediaUrlDialogContent
-            currentConfig={currentConfig}
+            currentConfig={currentConfig!}
             nodeType={nodeType}
             setOpen={setDialogOpen}
           />

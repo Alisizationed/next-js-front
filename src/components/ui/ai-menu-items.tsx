@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use client";
 
 import * as React from "react";
@@ -72,7 +73,7 @@ export const aiChatItems = {
     shortcut: "Escape",
     value: "discard",
     onSelect: ({ editor }) => {
-      editor.getTransforms(AIPlugin).ai.undo();
+      editor.getTransforms(AIPlugin).ai!.undo();
       editor.getApi(AIChatPlugin).aiChat.hide();
     },
   },
@@ -299,8 +300,8 @@ export const AIMenuItems = ({
   }, [menuState]);
 
   React.useEffect(() => {
-    if (menuGroups.length > 0 && menuGroups[0].items.length > 0) {
-      setValue(menuGroups[0].items[0].value);
+    if (menuGroups.length > 0 && menuGroups[0]!.items.length > 0) {
+      setValue(menuGroups[0]!.items[0]!.value);
     }
   }, [menuGroups, setValue]);
 

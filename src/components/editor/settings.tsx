@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 'use client';
 
@@ -67,7 +66,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     openai: '',
     uploadthing: '',
   });
-  const [model, setModel] = React.useState<Model>(models[0]);
+  const [model, setModel] = React.useState<Model>(models[0]!);
 
   const setKey = (service: string, key: string) => {
     setKeys((prev) => ({ ...prev, [service]: key }));
@@ -162,7 +161,7 @@ export function SettingsDialog() {
       <Input
         id={label}
         className="pr-10"
-        value={tempKeys[service]}
+        value={tempKeys[service as keyof typeof tempKeys] || ''}
         onChange={(e) =>
           setTempKeys((prev) => ({ ...prev, [service]: e.target.value }))
         }

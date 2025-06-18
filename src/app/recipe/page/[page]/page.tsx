@@ -27,7 +27,7 @@ const RecipeList = ({ params }: { params: Promise<{ page: number }> }) => {
       <BentoGrid className="mx-auto max-w-4xl">
         {data?.content?.map((item, i) => (
           <BentoGridItem
-            key={`recipe-${item.id}`}
+            key={`recipe-pageable-${item.id}`}
             title={item.title}
             image={item.image}
             className={i === 3 || i === 6 ? "md:col-span-2" : ""}
