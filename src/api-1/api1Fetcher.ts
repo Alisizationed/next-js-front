@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { Api1Context } from "./api1Context";
 
-const baseUrl = "https://localhost:8463";
+const baseUrl = process.env.NEXT_PUBLIC_API_ACCOUNTS_BASE_URL;
 
 export type ErrorWrapper<TError> =
   | TError

@@ -11,7 +11,7 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
-    AUTH_KEYCLOAK_ID: z.string(),
+    AUTH_KEYCLOAK_ID: z.string() ?? "",
     AUTH_KEYCLOAK_SECRET: z.string(),
     AUTH_KEYCLOAK_ISSUER: z.string(),
     NODE_ENV: z

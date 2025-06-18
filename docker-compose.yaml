@@ -1,0 +1,36 @@
+services:
+  next-js:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    image: danuanastasia/t3:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_SECRET=bZvMGca0PP3a78tgfi3bybkxrvvqoB/By/V8bOcI6Tg=
+      - AUTH_KEYCLOAK_ID=second-client
+      - AUTH_KEYCLOAK_SECRET=Beu2hm7aUL5dLmAYMriwum4XGX7tpyxh
+      - AUTH_KEYCLOAK_ISSUER=https://www.mykeycloak.com:8040/auth/realms/recipe-app
+      - AUTH_KEYCLOAK_API=https://www.mykeycloak.com:8040/auth/admin/realms/recipe-app
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - OLLAMA_URL=https://172.16.48.44:8473
+      - NEXT_PUBLIC_API_BASE_URL=https://172.16.48.44:8453
+      - NEXT_PUBLIC_API_ACCOUNTS_BASE_URL=https://172.16.48.44:8463
+      - NEXT_PUBLIC_API_URL=https://localhost:3000
+      - HOSTNAME=0.0.0.0
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL_INTERNAL=http://localhost:3000
+      - AUTH_TRUST_HOST=true
+    networks:
+      - nginx_network
+    extra_hosts:
+      - "localhost:0.0.0.0"
+      - "www.mykeycloak.com:172.16.48.44"
+
+networks:
+  nginx_network:
+    driver: bridge

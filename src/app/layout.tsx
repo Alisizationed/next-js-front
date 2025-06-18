@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import CustomNavbar from "@/components/CustomNavbar";
 import Footer from "@/components/ui/footer";
 import Wrapper from "@/components/Wrapper";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: "Recipe App",
