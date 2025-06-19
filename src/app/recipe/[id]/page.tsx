@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -56,8 +57,6 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
     plugins: staticPlugins,
   });
 
-  console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
-
   return (
     <div
       className={cn(
@@ -68,14 +67,14 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
         {data?.title}
       </h1>
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
-        <Image
+        <img
           src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${data?.image}`}
           alt="Recipe image"
-          width={1600}
-          height={900}
-          quality={75}
-          priority={false}
-          loading="lazy"
+          // width={1600}
+          // height={900}
+          // quality={75}
+          // priority={false}
+          // loading="lazy"
           className="h-full w-full object-cover"
         />
       </div>

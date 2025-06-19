@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Link from "next/link";
@@ -47,7 +48,7 @@ export const BentoGridItem = ({
         key={`recipe-${link.split("/")[2]}`}
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-          <Image
+          {/* <Image
             src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${image}`}
             alt="Recipe image"
             quality={50}
@@ -55,6 +56,16 @@ export const BentoGridItem = ({
             height={450}
             priority={false}
             loading="lazy"
+            className="h-full w-full object-cover"
+          /> */}
+          <img
+            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${image}`}
+            alt="Recipe image"
+            // quality={50}
+            // width={600}
+            // height={450}
+            // priority={false}
+            // loading="lazy"
             className="h-full w-full object-cover"
           />
         </div>

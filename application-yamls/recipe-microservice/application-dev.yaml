@@ -80,7 +80,7 @@ cors:
   allow-credentials: true
 
 accounts:
-  url: https://accounts.microservice:8463
+  url: https://accounts-microservice:8463
   favourites-endpoint: "/api/users/favourite/{username}"
   favourites-endpoint-v2: "/api/users/favourite/v2/{username}"
   picture-endpoint: "/api/users/picture/{id}"

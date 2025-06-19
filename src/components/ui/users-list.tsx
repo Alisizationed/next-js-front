@@ -8,7 +8,8 @@ import type { UserListRepresentationDTO } from "@/api-1/api1Schemas";
 const isTrustedDomain = (url: string): boolean => {
   try {
     const { hostname } = new URL(url);
-    return hostname === "localhost";
+    // return hostname === "localhost";
+    return false;
   } catch {
     return false;
   }

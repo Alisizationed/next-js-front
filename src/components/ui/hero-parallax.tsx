@@ -140,7 +140,7 @@ export const ProductCard = ({
       className="group/product relative h-96 w-[30rem] shrink-0"
     >
       <Link href={product.link} className="block group-hover/product:shadow-2xl">
-        <Image
+        {/* <Image
           src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${product.thumbnail}`}
           alt={`Recipe ${product.title} picture`}
           quality={50}
@@ -148,6 +148,16 @@ export const ProductCard = ({
           height={600}
           priority={false}
           loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover object-left-top"
+        /> */}
+        <img
+          src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipe/images/v2/${product.thumbnail}`}
+          alt={`Recipe ${product.title} picture`}
+          // quality={50}
+          // width={600}
+          // height={600}
+          // priority={false}
+          // loading="lazy"
           className="absolute inset-0 h-full w-full object-cover object-left-top"
         />
       </Link>
