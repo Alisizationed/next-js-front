@@ -1,4 +1,9 @@
 services:
+
+# ===================================================================
+# NEXT JS APP
+# ===================================================================
+
   next-js:
     platform: "linux/amd64"
     build:
@@ -13,7 +18,7 @@ services:
     environment:
       - AUTH_SECRET=bZvMGca0PP3a78tgfi3bybkxrvvqoB/By/V8bOcI6Tg=
       - AUTH_KEYCLOAK_ID=second-client
-      - AUTH_KEYCLOAK_SECRET=Beu2hm7aUL5dLmAYMriwum4XGX7tpyxh
+      - AUTH_KEYCLOAK_SECRET=49pnJzKk6vmRpGTLUoH9B1Gm2s3Pj5rT
       - AUTH_KEYCLOAK_ISSUER=https://www.mykeycloak.com:8040/auth/realms/recipe-app
       - AUTH_KEYCLOAK_API=https://www.mykeycloak.com:8040/auth/admin/realms/recipe-app
       - NODE_TLS_REJECT_UNAUTHORIZED=0
@@ -26,11 +31,252 @@ services:
       - NEXTAUTH_URL_INTERNAL=http://localhost:3000
       - AUTH_TRUST_HOST=true
     networks:
-      - nginx_network
+      - keycloak_network
+      - recipe_microservice_network
+      - accounts_microservice_network
     extra_hosts:
       - "localhost:0.0.0.0"
       - "www.mykeycloak.com:172.16.48.44"
+      - "recipe-microservice:172.16.48.44"
+      - "accounts-microservice:172.16.48.44"
+
+# ===================================================================
+# RECIPE APP
+# ===================================================================
+
+  recipe-microservice:
+    image: danuanastasia/recipe-microservice:latest
+    ports:
+      - "8453:8453"
+    networks:
+      - keycloak_network
+      - ollama_network
+      - recipe_microservice_network
+      - accounts_microservice_network
+      - db_network
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./application-yamls/recipe-microservice/application-dev.yaml:/app/resources/application-dev.yaml
+      - ./images:/app/resources/static
+    extra_hosts:
+      - "www.mykeycloak.com:172.16.48.44"
+
+# ===================================================================
+# ACCOUNTS MICROSERVICE APP
+# ===================================================================
+
+  accounts-microservice:
+    image: danuanastasia/accounts-microservice:latest
+    ports:
+      - "8463:8463"
+    networks:
+      - keycloak_network
+      - accounts_microservice_network
+    environment:
+      - SPRING_APPLICATION_NAME=accounts-microservice
+      - SPRING_DOCKER_COMPOSE_ENABLED=false
+
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://www.mykeycloak.com:8040/auth/realms/recipe-app
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=https://www.mykeycloak.com:8040/auth/realms/recipe-app/protocol/openid-connect/certs
+
+      - KEYCLOAK_SERVER_URL=https://www.mykeycloak.com:8040/auth
+      - KEYCLOAK_REALM=recipe-app
+      - KEYCLOAK_ADMIN_CLIENT_ID=java-client
+      - KEYCLOAK_ADMIN_CLIENT_SECRET=2CErf9vBAAkvOPz1lNqN5pxCrQbI1QOS
+      - KEYCLOAK_ADMIN_USER_USERNAME=danu.anastasia@ceiti.md
+      - KEYCLOAK_ADMIN_USER_PASSWORD=pass
+
+      - SERVER_PORT=8463
+      - SERVER_SSL_KEY_ALIAS=recipessl
+      - SERVER_SSL_KEY_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_KEY_STORE=classpath:recipessl.pfx
+      - SERVER_SSL_KEY_STORE_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_TRUST_STORE=classpath:recipessl.pfx
+      - SERVER_SSL_TRUST_STORE_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_ENABLED=true
+
+      - LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG
+      - LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL=TRACE
+
+      - SPRINGDOC_API_DOCS_ENABLED=true
+      - SPRINGDOC_API_DOCS_PATH=/v3/api-docs.yaml
+      - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui/index.html
+    extra_hosts:
+      - "www.mykeycloak.com:172.16.48.44"
+
+# ===================================================================
+# AI MICROSERVICE APP
+# ===================================================================
+
+  ai-microservice:
+    image: danuanastasia/ai-microservice:latest
+    ports:
+      - "8473:8473"
+    networks:
+      - keycloak_network
+      - ai_microservice_network
+      - ollama_network
+    environment:
+      - SPRING_APPLICATION_NAME=ai-microservice
+      - SPRING_DOCKER_COMPOSE_ENABLED=false
+
+      # --- Keycloak Configuration ---
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://www.mykeycloak.com:8040/auth/realms/recipe-app
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=https://www.mykeycloak.com:8040/auth/realms/recipe-app/protocol/openid-connect/certs
+
+      # --- Server Configuration ---
+      - SERVER_PORT=8473
+      - SERVER_SSL_KEY_ALIAS=recipessl
+      - SERVER_SSL_KEY_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_KEY_STORE=classpath:recipessl.pfx
+      - SERVER_SSL_KEY_STORE_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_TRUST_STORE=classpath:recipessl.pfx
+      - SERVER_SSL_TRUST_STORE_PASSWORD=SSLkeystorePASS1
+      - SERVER_SSL_ENABLED=true
+
+      # --- Llama/Ollama Configuration ---
+      - LLAMA_BASE_URL=http://ollama:13434
+      - LLAMA_DEFAULT_MODEL=llama3.1:8b
+      - LLAMA_DEFAULT_TEMPERATURE=0.8
+
+      # --- Springdoc/Swagger UI Configuration ---
+      - SPRINGDOC_API_DOCS_ENABLED=true
+      - SPRINGDOC_API_DOCS_PATH=/v3/api-docs.yaml
+      - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui/index.html
+    extra_hosts:
+      - "www.mykeycloak.com:172.16.48.44"
+      - "ollama:172.16.48.44"
+
+# ===================================================================
+# POSTGRES PGVECTOR DB
+# ===================================================================
+
+  db:
+    image: ankane/pgvector
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: recipe_db
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+# ===================================================================
+# KEYCLOAK DB
+# ===================================================================
+
+  keycloak-db:
+    image: postgres:latest
+    command: [ "postgres", "-c", "log_statement=all", "-c", "log_destination=stderr" ]
+    environment:
+      POSTGRES_DB: bitnami_keycloak_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "14012:5432"
+    volumes:
+      - keycloak-db:/var/lib/postgresql/data
+    networks:
+      - keycloak_network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+# ===================================================================
+# KEYCLOAK
+# ===================================================================
+
+  keycloak:
+    image: bitnami/keycloak:latest
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: pass
+      KEYCLOAK_DATABASE_HOST: keycloak-db
+      KEYCLOAK_DATABASE_PORT: 5432
+      KEYCLOAK_DATABASE_NAME: bitnami_keycloak_db
+      KEYCLOAK_DATABASE_USER: postgres
+      KEYCLOAK_DATABASE_PASSWORD: postgres
+      KEYCLOAK_ENABLE_HTTPS: "true"
+      KEYCLOAK_HTTPS_USE_PEM: "true"
+      KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE: /resources/fullchain.pem
+      KEYCLOAK_HTTPS_CERTIFICATE_FILE: /resources/fullchain.pem
+      KEYCLOAK_HOSTNAME: "www.mykeycloak.com"
+      KEYCLOAK_HOSTNAME_STRICT: "false"
+      KEYCLOAK_HTTP_RELATIVE_PATH: /auth
+      KEYCLOAK_SPI_CONTENT_SECURITY_POLICY_PROVIDER: "inline-frame-src-allow-all"
+      KEYCLOAK_PROXY_ADDRESS_FORWARDING: "true"
+      KC_CONTENT_SECURITY_POLICY: "frame-src *;"
+      KC_SPI_CONTENT_SECURITY_POLICY_SCRIPTSHASH: "true"
+      KC_SPI_CONTENT_SECURITY_POLICY_USEDEFAULT: "false"
+      KEYCLOAK_WEB_ORIGINS: "+"
+      KEYCLOAK_PRODUCTION: "false"
+    ports:
+      - "8040:8443"
+    volumes:
+      - ./certs/fullchain.pem:/resources/fullchain.pem
+    networks:
+      - keycloak_network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "https://www.mykeycloak.com:8040/auth/realms/master" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+# ===================================================================
+# OLLAMA
+# ===================================================================
+  ollama:
+    build:
+      context: .
+      dockerfile: ./ollama/Dockerfile
+    ports:
+      - "11434:11434"
+    networks:
+      - ollama_network
+    volumes:
+      - ollama_models:/root/.ollama
+      - ./ollama/ollama_init.sh:/usr/local/bin/ollama_init.sh
+    environment:
+      - OLLAMA_INITIAL_MODEL=llama3.1:8b
+    entrypoint: ["/bin/sh", "-c", "/usr/local/bin/ollama_init.sh && ollama pull nomic-embed-text"]
+    restart: unless-stopped
+    tty: true
+
+
+volumes:
+  data:
+  keycloak-db:
+  ollama_models:
 
 networks:
-  nginx_network:
+  keycloak_network:
+    driver: bridge
+  ollama_network:
+    driver: bridge
+  recipe_microservice_network:
+    driver: bridge
+  accounts_microservice_network:
+    driver: bridge
+  ai_microservice_network:
+    driver: bridge
+  db_network:
     driver: bridge

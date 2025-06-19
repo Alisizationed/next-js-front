@@ -56,6 +56,8 @@ const RecipePage = ({ params }: { params: Promise<{ id: number }> }) => {
     plugins: staticPlugins,
   });
 
+  console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
+
   return (
     <div
       className={cn(
